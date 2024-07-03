@@ -1,0 +1,88 @@
+---
+title: ""
+---
+
+
+## Correlação
+
+### Pacotes 
+```{r}
+library(gsheet)
+library(tidyverse)
+library(AgroR)
+library(dplyr)
+library(corrplot)
+```
+
+### Importando dados
+
+```{r}
+
+imagem <- gsheet2tbl("https://docs.google.com/spreadsheets/d/1bq2N19DcZdtax2fQW9OHSGMR0X2__Z9T/edit#gid=373270992")
+```
+
+### Visualizando
+
+```{r}
+imagem |> 
+  ggplot(aes(Assess, LeafDoctor))+
+  geom_point()
+
+imagem |> 
+  pivot_longer(3:5, names_to = "method", values_to = "value") |> 
+  ggplot(aes(method, value))+
+  geom_boxplot()
+
+imagem |> 
+ggplot(aes(Assess, ImageJ))+
+  geom_point()+
+  geom_smooth(method = "ln")
+
+imagem |> 
+ggplot(aes(Assess, LeafDoctor))+
+  geom_point()+
+  geom_smooth(method = "ln")
+```
+
+### Pacote agroR
+
+```{r}
+
+imagem2 <- imagem |> 
+  dplyr::select(3:5)
+corgraph(imagem2)
+
+cor.test(imagem$Assess, imagem$LeafDoctor)
+cor(imagem$Assess, imagem$LeafDoctor)
+
+```
+
+### Pacote corrplot
+
+```{r}
+
+cor_imagem2 <- cor(imagem2)
+corrplot(cor_imagem2, method = 'number', type = "lower")
+
+
+corrplot(cor_imagem2, method = 'number', type = "upper", diag = F)
+```
+
+### Importando dados do campo
+
+```{r}
+campo <- gsheet2tbl("https://docs.google.com/spreadsheets/d/1bq2N19DcZdtax2fQW9OHSGMR0X2__Z9T/edit#gid=866852711")
+```
+
+```{r}
+campo2 <- campo |> 
+dplyr::select(3:5)
+corgraph(campo2)
+```
+
+```{r}
+campo |> 
+  ggplot(aes(FER, PROD))+
+  geom_point()
+```
+

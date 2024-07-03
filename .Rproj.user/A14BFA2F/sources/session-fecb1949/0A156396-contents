@@ -37,7 +37,9 @@ website:
         - href: testet.qmd
           text: Teste T, ANOVA, Teste de Normalidade e Homocedasticidade e Teste não-paramétrico
         - href: regressao.qmd
-          text: Análise de Regressão    
+          text: Análise de Regressão
+        - href: correlacao.qmd
+          text: Análise de Correlação 
 
       - text: Mapas 
         menu: 

@@ -1,0 +1,8 @@
+"0","pyra2 <- pyra |>"
+"0","  group_by(code, state, dose) |> "
+"0","  summarise(mean_germination = mean(germination))"
+"2","`summarise()` has grouped output by 'code', 'state'. You can override using the `.groups` argument."
+"0","pyra2|> "
+"0","  ggplot(aes(dose, mean_germination))+"
+"0","  geom_point()+"
+"0","  facet_wrap(~code)"

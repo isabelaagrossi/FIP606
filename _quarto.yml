@@ -40,6 +40,8 @@ website:
           text: Análise de Regressão
         - href: correlacao.qmd
           text: Análise de Correlação 
+        - href: ec50.qmd
+          text: EC50
 
       - text: Mapas 
         menu: 

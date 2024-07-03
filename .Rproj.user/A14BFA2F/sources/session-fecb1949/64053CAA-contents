@@ -1,0 +1,79 @@
+---
+title: ""
+---
+
+
+
+
+### Pacotes
+
+```{r}
+library(gsheet)
+library(drc)
+library(ec50estimator)
+library(ggplot2)
+library(tidyverse)
+library(dplyr)
+
+```
+
+### Importando dados
+
+```{r}
+pyra <- gsheet2tbl("https://docs.google.com/spreadsheets/d/1bq2N19DcZdtax2fQW9OHSGMR0X2__Z9T/edit#gid=465348652")
+
+```
+
+### visualizando
+
+```{r}
+pyra2 <- pyra |>
+  group_by(code, state, dose) |> 
+  summarise(mean_germination = mean(germination))
+
+pyra2|> 
+  ggplot(aes(dose, mean_germination))+
+  geom_point()+
+  facet_wrap(~code)
+```
+
+### EC50 usando pacote (drc)
+
+```{r}
+isolado186 <- pyra2 |> 
+   filter(code == "186")
+
+drc1 <- drm(mean_germination ~ dose, data = isolado186,
+            fct = W1.3())
+
+ED(drc1, 50, interval = "delta")
+
+```
+
+
+```{r}
+isolado165 <- pyra2 |> 
+  filter(code == "165")
+
+drc2 <- drm(mean_germination ~ dose, data = isolado165,
+            fct = LL.3())
+ED(drc2, 50, interval = "delta")
+```
+
+
+```{r}
+df_ec50 <- estimate_EC50(mean_germination ~ dose,
+                         data = pyra2,
+                         isolate_col = "code",
+                         interval = "delta",
+                         fct = drc::LL.3())
+
+df_ec50 |> 
+  ggplot(aes(reorder(ID, Estimate), Estimate))+
+  geom_point()+
+  geom_errorbar(aes(ymin = Lower, ymax = Upper), width = 0.1)+
+  coord_flip()
+
+print(df_ec50)
+```
+

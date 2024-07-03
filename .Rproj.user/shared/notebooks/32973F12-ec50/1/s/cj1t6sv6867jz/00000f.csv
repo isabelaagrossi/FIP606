@@ -1,0 +1,28 @@
+"0","library(gsheet)"
+"0","library(drc)"
+"2","Warning: package ‘drc’ was built under R version 4.3.3"
+"2","
+'drc' has been loaded.
+
+"
+"2","Please cite R and 'drc' if used for a publication,
+"
+"2","for references type 'citation()' and 'citation('drc')'.
+
+"
+"2","
+Attaching package: ‘drc’
+
+"
+"2","The following object is masked from ‘package:AgroR’:
+
+    logistic
+
+"
+"2","The following objects are masked from ‘package:stats’:
+
+    gaussian, getInitial
+
+"
+"0","library(ec50estimator)"
+"2","Warning: package ‘ec50estimator’ was built under R version 4.3.3"

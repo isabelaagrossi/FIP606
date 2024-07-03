@@ -1,0 +1,6 @@
+"0",""
+"0","dfc <- milho |> "
+"0","  ggplot(aes(hybrid, index ))+"
+"0","  geom_jitter(width = 0.05, color = ""gray70"")+"
+"0","  stat_summary(fun.data = ""mean_cl_boot"", size =0.5, color = ""black"", alpha = 0.5)"
+"0","dfc"

@@ -1,0 +1,425 @@
+---
+title: ""
+---
+
+
+
+### Importando os dados 
+
+```{r}
+library(gsheet)
+library(tidyverse)
+milho <- gsheet2tbl("https://docs.google.com/spreadsheets/d/1bq2N19DcZdtax2fQW9OHSGMR0X2__Z9T/edit#gid=1345524759")
+milho <- milho |> 
+  mutate(TRAT = as.factor(hybrid),
+         BLOCO = as.factor(block))
+```
+
+### Visualisa
+
+```{r}
+
+dfc <- milho |> 
+  ggplot(aes(hybrid, index ))+
+  geom_jitter(width = 0.05, color = "gray70")+
+  stat_summary(fun.data = "mean_cl_boot", size =0.5, color = "black", alpha = 0.5)
+dfc
+
+dfc <- milho |> 
+  ggplot(aes(hybrid, yield ))+
+  geom_jitter(width = 0.05, color = "gray70")+
+  stat_summary(fun.data = "mean_cl_boot", size =0.5, color = "black", alpha = 0.5)
+dfc
+```
+
+## Index
+
+```{r}
+milho %>% 
+ggplot(aes(method, index))+
+  geom_jitter(width = 0.1, alpha= 0.2) +
+  facet_wrap(~hybrid) +
+  stat_summary(fun.data = "mean_cl_boot", size= 0.5, color = "blue")
+```
+
+### Modelo para subdivida
+
+```{r}
+library(lme4)
+library(car)
+
+
+milho<- milho %>% 
+  mutate(block = as.factor(block))
+
+mix2 <- lmer(index ~ hybrid*method + block +       #fator fixo 
+               (1|block/hybrid), data = milho)
+
+Anova(mix2)
+
+#para saber se esse modelo está correto temo que testar as premissas
+
+```
+
+### Testar as premissas
+
+```{r}
+library(performance)
+
+check_normality(mix2)
+check_heteroscedasticity(mix2)
+
+
+
+mix2 <- lmer(sqrt(index) ~ hybrid*method + block +        
+               (1|block/hybrid), data = milho)
+
+library(DHARMa)
+plot(simulateResiduals(mix2))
+
+qqnorm(residuals(mix2))
+qqline(residuals(mix2))
+hist(residuals(mix2))
+
+
+
+library(emmeans)
+
+medias_milho <- emmeans(mix2,
+                        ~ hybrid | method,
+                        type = "response")
+
+medias_milho2 <- emmeans(mix2,
+                        ~ method | hybrid,
+                        type = "response")
+
+library(multcomp)
+cld(medias_milho, Letters = LETTERS)
+cld(medias_milho2)
+
+
+
+
+```
+
+```{r}
+
+mix3 <- lmer(sqrt(yield) ~ hybrid*method + block +        
+               (1|block/hybrid), data = milho)
+
+Anova(mix3)
+check_heteroscedasticity(mix3)
+check_normality(mix3)
+
+
+
+```
+
+## Regressão linear
+
+```{r}
+
+estande <- gsheet2tbl("https://docs.google.com/spreadsheets/d/1bq2N19DcZdtax2fQW9OHSGMR0X2__Z9T/edit#gid=401662555")
+
+estande
+```
+
+```{r}
+ 
+estande |>
+  ggplot(aes(trat, nplants))+
+  geom_jitter(wdth = 0.1, alpha = 0.2) +
+  facet_wrap(~ exp) +
+   stat_summary(fun.data = "mean_cl_boot", size= 0.5, color = "blue") +
+  geom_smooth(method = "lm", se = F)    #regresão linear
+
+          
+  
+  
+  exp1 <- estande %>% 
+    filter(exp == 1)
+  
+  exp1 %>% 
+    ggplot(aes(trat, nplants))+
+    geom_point()+
+    ylim(0,100) +
+    geom_smooth(se = F, method = lm)
+  
+  
+  
+  #modelo linear
+  
+  lm1 <- lm(nplants~ trat,
+            data = exp1)
+summary(lm1)
+
+
+ exp2 <- estande %>% 
+    filter(exp == 2)
+  
+  exp2 %>% 
+    ggplot(aes(trat, nplants))+
+    geom_point()+
+    ylim(0,100) +
+    geom_smooth(se = F, method = lm)
+
+ lm2 <- lm(nplants~ trat,
+            data = exp2)
+summary(lm2)
+  
+
+ exp2 %>% 
+    ggplot(aes(trat, nplants))+
+    geom_point()+
+    ylim(0,100) +
+    geom_smooth(se = F, method = lm)
+
+ lm2 <- lm(nplants~ trat,
+            data = exp2)
+summary(lm2)
+
+ exp3 <- estande %>% 
+    filter(exp == 3)
+  
+  exp3 %>% 
+    ggplot(aes(trat, nplants))+
+    geom_point()+
+    ylim(0,100) +
+    geom_smooth(se = F, method = lm)
+
+ lm3 <- lm(nplants~ trat,
+            data = exp3)
+summary(lm3)
+
+```
+
+
+#### Modelo quadratico
+
+
+```{r}
+
+exp2 %>% 
+    ggplot(aes(trat, nplants))+
+    geom_point()+
+    ylim(0,100) +
+    geom_smooth(method = "lm",
+                se = FALSE,
+                formula = y ~poly(x,2),
+                color = "black")
+
+
+# Comparando o modelo linear com o quadradatico: 
+
+exp2 %>% 
+    ggplot(aes(trat, nplants))+
+    geom_point()+
+    ylim(0,100) +
+    geom_smooth(method = lm,
+                se = FALSE,
+                formula = y ~poly(x,2),
+                color = "black") +
+  geom_smooth(method = "lm", se = FALSE)
+
+
+
+ lm2 <- lm(nplants~ trat,
+            data = exp2)
+ 
+summary(lm2)
+hist(residuals(lm2))
+
+
+
+# Ajustar o modelo quadratico: para ter mais um coeficiente neste modelo (^2)
+
+# Primeira ordem
+
+exp2$trat2 <- exp2$trat^2
+
+# Segunda ordem
+
+lm3<- lm(nplants ~trat + trat2,
+         data = exp2)
+summary(lm3)
+
+#o r2 aumentou, explicando MELHOR. 50% DA VARIAÇÃO
+
+AIC(lm2)
+AIC(lm3)
+
+
+exp2$trat2 <- exp2$trat^2
+
+#primeira ordem
+exp2$trat2 <- exp2$trat^2
+
+# segunda ordem ou quadratico
+lm3<- lm(nplants ~trat + trat2,
+         data = exp2)
+summary(lm3)
+#o r2 aumentou, explicando MELHOR. 50% DA VARIAÇÃO
+AIC(lm2)
+AIC(lm3)
+
+
+
+
+
+
+```
+
+#### Fazendo a mesmo coisa pelo agroR
+
+```{r}
+library(AgroR)
+
+with(exp2, polynomial(trat, nplants, grau = 1))
+#polynomial(trat, nplants, grau = 1, data = exp2)
+
+with(exp2, polynomial(trat, nplants, grau = 2))
+
+
+# Grau 3 não utilizamos porque não tem explicação biologica.
+
+with(exp2, polynomial(trat, nplants, grau = 3))
+
+
+#library(agro3)
+#with(exp2, polynomial(trat, nplants, grau = 2))
+#data("phao")
+#with(phao, polynomial(dose, comp, grau = 2))
+
+```
+
+```{r}
+
+glm2 <- glm(nplants ~ trat, family = "gaussian", 
+            data = exp2)
+glm2
+
+
+summary(glm2)
+AIC(glm2)
+
+glm2b <- glm(nplants ~ trat, family = "poisson" (link = log),
+             data = exp2)
+
+summary(glm2b)
+AIC(glm2b)
+
+
+
+glm3 <- glm(nplants ~ trat, family = "gaussian", 
+            data = exp3)
+glm3
+
+
+summary(glm3)
+AIC(glm3)
+
+glm3b <- glm(nplants ~ trat, family = "poisson" (link = log),
+             data = exp3)
+
+summary(glm3b)
+AIC(glm3b)
+
+library(lme4)
+
+glm3 <- glmer(nplants ~ trat + (trat | exp), family = "gaussian", 
+            data = estande)
+glm3
+
+summary(glm3)
+AIC(glm3)
+
+glm3b <- glmer(nplants ~ trat + ( trat | exp), family = "poisson" (link = "log"),
+             data = estande)
+
+summary(glm3b)
+AIC(glm3b)
+
+#remotes::install_github("emdelponte/r4pe")
+
+library(r4pde)
+wm <- WhiteMoldSoybean
+
+wm %>% 
+  ggplot(aes(inc, yld)) +
+  geom_point() +
+  facet_wrap(~study) +
+  theme_minimal()
+
+
+mofo1 <- lm(yld ~ inc,
+            data = wm)
+summary(mofo1)
+
+
+
+wm %>% 
+  ggplot(aes(inc, yld , group = factor(study))) +
+  geom_point() +
+  theme_minimal() +
+  geom_smooth(method = "lm", se = F) 
+
+mofo1 <- lm(yld ~ inc,
+            data = wm)
+summary(mofo1)
+
+
+
+```
+
+```{r}
+library(broom)
+
+mofo2 <- wm %>% 
+  group_by(study) %>% 
+  do (tidy(lm(.$yld ~ .$inc), conf.int = TRUE))
+mofo2
+
+
+#p3 <- fit_all |> 
+ # filter(term == "(Intercept)") |> 
+ # ggplot(aes(x = estimate))+
+ # geom_histogram(bins = 8, color = "white", fill = "gray50")+
+ #theme_r4pde()+
+  #labs(x = "Intercept", y = "Frequency")
+
+#p4 <- fit_all |> 
+  #filter(term == ".$inc") |> 
+  #ggplot(aes(x = estimate))+
+  #geom_histogram(bins = 8, color = "white", fill = "gray50")+
+  #theme_r4pde()+
+  #labs(x = "Slope", y = "Frequency")
+
+
+library(patchwork)
+#p3|p4
+
+
+df <- mofo2 %>%  filter(term == ".$inc")
+mean(df$estimate)
+  
+
+library(patchwork)
+#p3|p4
+
+```
+
+```{r}
+library(lme4)
+
+mofo3 <- lmer(yld ~ inc + (inc | study), data = wm,
+              REML = F)
+
+summary(mofo3)
+
+Anova(mofo3)
+
+
+
+#confint(mofo3, method = "wald")
+
+```

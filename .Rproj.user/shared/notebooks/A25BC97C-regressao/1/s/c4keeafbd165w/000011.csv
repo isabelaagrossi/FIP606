@@ -1,0 +1,6 @@
+"0","library(broom)"
+"0",""
+"0","mofo2 <- wm %>% "
+"0","  group_by(study) %>% "
+"0","  do (tidy(lm(.$yld ~ .$inc), conf.int = TRUE))"
+"0","mofo2"

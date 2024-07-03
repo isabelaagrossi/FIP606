@@ -1,0 +1,5 @@
+"0","#library(agro3)"
+"0","#with(exp2, polynomial(trat, nplants, grau = 2))"
+"0","#data(""phao"")"
+"0","#with(phao, polynomial(dose, comp, grau = 2))"
+"0",""

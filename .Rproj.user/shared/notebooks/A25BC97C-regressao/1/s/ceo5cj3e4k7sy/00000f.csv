@@ -1,0 +1,6 @@
+"0","library(gsheet)"
+"0","library(tidyverse)"
+"0","milho <- gsheet2tbl(""https://docs.google.com/spreadsheets/d/1bq2N19DcZdtax2fQW9OHSGMR0X2__Z9T/edit#gid=1345524759"")"
+"0","milho <- milho |> "
+"0","  mutate(TRAT = as.factor(hybrid),"
+"0","         BLOCO = as.factor(block))"

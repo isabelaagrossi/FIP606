@@ -1,0 +1,14 @@
+"0","library(performance)"
+"0",""
+"0","check_normality(mix2)"
+"1","[32mOK: residuals appear as normally distributed (p = 0.635).
+[39m"
+"0","check_heteroscedasticity(mix2)"
+"1","[31mWarning: Heteroscedasticity (non-constant error variance) detected (p = 0.009).
+[39m"
+"0","mix2 <- lmer(sqrt(index) ~ hybrid*method + block +        "
+"0","               (1|block/hybrid), data = milho)"
+"2","Warning: unable to evaluate scaled gradient"
+"2","Warning: Model failed to converge: degenerate  Hessian with 1 negative eigenvalues"
+"0","library(DHARMa)"
+"0","plot(simulateResiduals(mix2))"

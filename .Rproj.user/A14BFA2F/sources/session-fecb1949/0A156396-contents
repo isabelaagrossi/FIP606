@@ -34,9 +34,10 @@ website:
         
       - text: Estatística inferencial 
         menu: 
-        - href: testt.qmd
+        - href: testet.qmd
           text: Teste T, ANOVA, Teste de Normalidade e Homocedasticidade e Teste não-paramétrico
-        
+        - href: regressao.qmd
+          text: Análise de Regressão    
 
       - text: Mapas 
         menu: 

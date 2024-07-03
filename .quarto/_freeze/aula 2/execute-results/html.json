@@ -1,0 +1,14 @@
+{
+  "hash": "c6a49230c089f2d0e0a962919553e6fe",
+  "result": {
+    "markdown": "---\ntitle: \"\"\n---\n\n\n# Download do R\n\nLink para [instalação](https://posit.co/download/rstudio-desktop/) do R e R Studio\n\n# Instalação de pacotes\n\nA instalação de pacotes é uma etapa crucial na realização de análise de dados, pode ser feita pelo CRAN ou GitHub e deve ser feita seguindo os passos a seguir:\n\n-   **Pacotes do CRAN** que é o repositorio oficial do R.\n\n`Tools -> Install Packages -> \"digitar o nome do pacote\" -> Install ou usando a função \"instal.packages(nome do pacote)\"` no *console*\n\n-   **Pacotes do GitHub:**\n\nUtiliza a função `install_github()`\n\nExemplo: `remotes::install_github(\"emdelponte/r4pde\")`\n\n# Carregamento dos pacotes\n\nO carregamento dos pacotes pode ser feito diretamente através do *console*, digitando `library` e entre parenteses o nome do pacote. Obs: lembrar sempre de carregar um pacote antes de utilizar-lo.\n\nPara inserir um novo chunk (ctrl + alt + I).\n\n\n::: {.cell hash='aula-2_cache/html/unnamed-chunk-1_aee48c964363b397b1a6a6ae349a7975'}\n\n```{.r .cell-code}\n# Exemplo\n\nlibrary(tidyverse)\nlibrary(dplyr) \n```\n:::\n",
+    "supporting": [],
+    "filters": [
+      "rmarkdown/pagebreak.lua"
+    ],
+    "includes": {},
+    "engineDependencies": {},
+    "preserve": {},
+    "postProcess": true
+  }
+}

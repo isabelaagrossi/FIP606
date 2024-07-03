@@ -1,0 +1,6 @@
+"0",""
+"0","cr2 <- cr %>% "
+"0","  select(farm, region, cultivar, sev2) %>% "
+"0","  filter(region == ""Oromia"")"
+"0",""
+"0","cr2"

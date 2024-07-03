@@ -1,0 +1,4 @@
+"0","inseticida <- InsectSprays"
+"0",""
+"0","inseticida |> "
+"0","  count(spray)"

@@ -1,0 +1,5 @@
+"0",""
+"0","library(ggspatial)"
+"2","Warning: package ‘ggspatial’ was built under R version 4.3.3"
+"0","ggplot(BRA) +"
+"0","  geom_sf(fill = ""white"")"

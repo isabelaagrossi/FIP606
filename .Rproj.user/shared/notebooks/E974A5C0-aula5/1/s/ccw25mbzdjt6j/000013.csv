@@ -1,0 +1,3 @@
+"0",""
+"0","#Carreguei o pacote ""library(patchwork)"" e através do ""|"" coloquei os dois gráficos lado a lado."
+"0","(plot1|plot2)"

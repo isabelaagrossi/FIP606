@@ -1,0 +1,6 @@
+"0","inseticida <- inseticida |> "
+"0","  mutate(count2 = sqrt(count))"
+"0",""
+"0","inseticida |> "
+"0","  ggplot(aes(spray, count2))+"
+"0","  geom_boxplot()"

@@ -1,0 +1,8 @@
+"0",""
+"0","ggplot(BRA) +"
+"0","  geom_sf(fill = ""black"","
+"0","          color = ""yellow"","
+"0","          linewidth =0.3) +"
+"0","  geom_point(data = sbr, aes(longitude, latitude),"
+"0","             color = ""white"") +"
+"0","  theme_map()"

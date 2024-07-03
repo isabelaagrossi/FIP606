@@ -1,0 +1,6 @@
+"0",""
+"0","ggplot(BRA)  +"
+"0","  geom_sf(data = MG, fill = ""white"") +"
+"0"," # geom_point(data = sbr, aes(longitude, latitude),"
+"0","            # color = ""red"") +"
+"0","  theme_map()"

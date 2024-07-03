@@ -1,0 +1,36 @@
+"0","#| warning: false"
+"0","library(tidyverse)"
+"0","cr <- read_csv(""https://raw.githubusercontent.com/emdelponte/paper-coffee-rust-Ethiopia/master/data/survey_clean.csv"")"
+"2","[1mRows: [22m[34m405[39m [1mColumns: [22m[34m13[39m"
+"2","[36m──[39m [1mColumn specification[22m [36m───────────────────────────────────────────────────────[39m
+[1mDelimiter:[22m "",""
+[31mchr[39m (7): region, zone, district, cultivar, shade, cropping_system, farm_man...
+[32mdbl[39m (6): farm, lon, lat, altitude, inc, sev2"
+"2","
+[36mℹ[39m Use `spec()` to retrieve the full column specification for this data.
+[36mℹ[39m Specify the column types or set `show_col_types = FALSE` to quiet this message."
+"0","glimpse(cr)"
+"1","Rows: 405"
+"1",""
+"1","
+"
+"1","Columns: 13"
+"1",""
+"1","
+"
+"1","$ farm            [3m[38;5;246m<dbl>[39m[23m 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16…
+$ region          [3m[38;5;246m<chr>[39m[23m ""SNNPR"", ""SNNPR"", ""SNNPR"", ""SNNPR"", ""SNNPR"", ""SNNPR"",…
+$ zone            [3m[38;5;246m<chr>[39m[23m ""Bench Maji"", ""Bench Maji"", ""Bench Maji"", ""Bench Maji…
+$ district        [3m[38;5;246m<chr>[39m[23m ""Debub Bench"", ""Debub Bench"", ""Debub Bench"", ""Debub B…
+$ lon             [3m[38;5;246m<dbl>[39m[23m 35.44250, 35.44250, 35.42861, 35.42861, 35.42861, 35.…
+$ lat             [3m[38;5;246m<dbl>[39m[23m 6.904722, 6.904722, 6.904444, 6.904444, 6.904444, 6.9…
+$ altitude        [3m[38;5;246m<dbl>[39m[23m 1100, 1342, 1434, 1100, 1400, 1342, 1432, 1100, 1400,…
+$ cultivar        [3m[38;5;246m<chr>[39m[23m ""Local"", ""Mixture"", ""Mixture"", ""Local"", ""Local"", ""Mix…
+$ shade           [3m[38;5;246m<chr>[39m[23m ""Sun"", ""Mid shade"", ""Mid shade"", ""Sun"", ""Sun"", ""Mid s…
+$ cropping_system [3m[38;5;246m<chr>[39m[23m ""Plantation"", ""Plantation"", ""Plantation"", ""Plantation…
+$ farm_management [3m[38;5;246m<chr>[39m[23m ""Unmanaged"", ""Minimal"", ""Minimal"", ""Unmanaged"", ""Unma…
+$ inc             [3m[38;5;246m<dbl>[39m[23m 86.70805, 51.34354, 43.20000, 76.70805, 47.15808, 51.…
+$ sev2            [3m[38;5;246m<dbl>[39m[23m 55.57986, 17.90349, 8.25120, 46.10154, 12.25167, 19.9…"
+"1",""
+"1","
+"

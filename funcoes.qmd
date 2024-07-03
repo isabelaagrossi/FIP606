@@ -1,0 +1,523 @@
+---
+title: ""
+---
+
+
+## Operadores básicos
+
+#### Operador de atribuição
+
+```{r}
+
+# <- 
+# =
+
+a <- 1
+b = 1
+a
+
+```
+
+#### Vetores numéricos - individuais
+
+Exemplos de vetores numéricos - Inteiro e decimal
+
+```{r}
+
+
+# Númerico inteiro
+serie1 <- c(1:4)
+
+# Númerico decimal 
+serie2 <- c(1.5,2.5,3.5,4.5)
+
+# Caractere
+serie3 <- c("um", "dois", "tres", "quatro")
+
+# Booleano (verdadeiro ou falso)
+serie4 <- c(TRUE, FALSE, FALSE, FALSE)
+
+#serie4: binario 
+#Vetores independentes
+
+```
+
+#### Vetor de caractere - individuais
+
+```{r}
+
+a <- "Isabela - qualquer texto com mais de uma palavra"
+a <- c("um", "dois", "tres")
+
+```
+
+## Criando data frame
+
+Nesta etapa iremos criar um dataframe (base de dados) a partir de variaveis individuais que foram criadas previamente. A principal caracteristica de um data frame é possuir linha e colunas.
+
+Cria uma tabela com variaveis (pode ser diferentes - numerica inteira, decimal, caractere.. ) de mesmo tamanho para visualizar meus dados.
+
+Obs: cars- já é um data frame, que tem o "speed" e o "dist" como variavel. Se quiser criar um data frame a partir de outro data frame so precisa do sinal de atribuição (<-)
+
+
+
+## Exporando os dados:
+
+### Importa dados
+
+```{r}
+
+library(tidyverse)
+
+cr <- read_csv("https://raw.githubusercontent.com/emdelponte/paper-coffee-rust-Ethiopia/master/data/survey_clean.csv")
+
+
+
+
+```
+
+### Aprender a exportação:
+
+Pacote que permite fazer essa exportação é **writexl**
+
+-   A partir do data frame vamos exportar para um formato `.xlsx` ou `.csv`
+
+```{r}
+
+library(writexl)
+
+write_xlsx(cr, "cr.xlsx")
+
+write_csv(cr, "cr.csv")
+
+
+```
+
+## Funções de manipulação de dados:
+
+Iremos rever algumas funções ou verbos do pacote **dplyr**
+
+### `Select()`
+
+-   Variação de como selecionar as colunas utilizando os criterios.
+
+```{r}
+
+# Estou selecionando apenas algumas colunas, 1 a 10 e a coluna 13.
+
+cr %>% 
+  select(1:10, 13)
+
+ 
+# Posso selecionar as coluna por nomes. 
+
+cr %>% 
+  select(farm, region, inc, sev2)
+
+
+# Selecionei todas as colunas, menos a "sev2".
+
+cr %>% 
+  select(-sev2)
+
+
+# Para quando tem muitas colunas que quero excluir.
+
+cr %>% 
+  select(- c(inc, sev2))
+
+ 
+
+```
+
+### `Filter()`
+
+-   Filtar apenas linhas especificas.
+
+```{r}
+
+cr %>% 
+  select(farm, region, inc) %>% 
+  filter(inc > 50)
+
+
+cr %>% 
+  select(farm, region, inc) %>% 
+  filter(region == "SNNPR")
+  
+
+
+cr %>% 
+  select(farm, region, zone, inc) %>% 
+  filter(zone == "Bench Maji")
+
+
+#Estou pegando todas as zonas menos a Bench MAji. **"!="**
+cr %>% 
+  select(farm, region, zone, inc) %>% 
+  filter(zone != "Bench Maji")
+
+
+
+# Criando outro data frame: Criando um subconjunto do "cr". 
+
+cr2 <- cr %>% 
+  select(farm, region, zone, inc) %>% 
+  filter(zone != "Bench Maji")
+
+
+
+
+
+```
+
+##### Outro operador dentro do filtro que permite selecionar mais de uma condição dentro do nome zone. Estou selecionando duas zonas "Bench Maji", "Keffa".
+
+`%in%`
+
+```{r}
+
+cr2 <- cr %>% 
+  select(farm, region, zone, inc) %>% 
+  filter(zone %in% c("Bench Maji", "Keffa"))
+
+
+
+
+cr %>% 
+  select(farm, region, zone, inc) %>% 
+  filter(region == "SNNPR") %>% 
+  filter(zone != "Sidama")
+
+
+```
+
+### Para exportar esse data frame "cr2"
+
+```{r}
+
+cr2 <- cr %>% 
+  select(farm, region, zone, inc) %>% 
+  filter(zone != "Bench Maji")
+
+
+write_xlsx(cr2, "cr2.xlsx")
+
+
+```
+
+### Sumarização
+
+`Count()`: Vai contar alguma coisa, para não ter que ficar contando um por um na tabela.
+
+```{r}
+
+cr %>%
+  count(zone)
+  
+# Contar quantas zonas tenho em cada distrito. Deixa meu arquivo em formato longo, onde repete os nome da zone. 
+
+cr %>%
+  count(zone, district)
+
+
+
+```
+
+**OBS:** Podemos fazer a mesma coisa do `count()`, utilizando o `tally()`
+
+`group_by`
+
+```{r}
+
+cr %>%
+  group_by(zone, district) %>% 
+  tally()
+
+
+```
+
+### Tabela de contigencia:
+
+Para saber quantas ocorrencias tem, fazendo o cruzamento de region e cultivar, como se fosse uma tabela.
+
+Utiliza o pacote **janitor** que tem a função `tabyl`
+
+-   A função `tabyl` é muito parecido com o `count()`, porém ele tras o nome das zonas, as contagem e o percentual. Isso quando selecionamos apenas uma coluna (zone).
+
+```{r}
+
+library(janitor)
+
+cr %>%
+  tabyl(zone)
+
+
+
+# Tabela de contigencia: 
+
+cr %>%
+  tabyl(zone, cultivar)
+
+  
+cr %>%
+  tabyl(cultivar, shade)
+
+
+
+# Separa em duas tabela por região, quando utilizamos 3 variaveis (cultivar, shade, region). 
+
+cr %>%
+  tabyl(cultivar, shade, region)
+
+
+```
+
+**OBS:** - Para fazer um gráfico com a tabela de contigencia, é melhor usar o `count()` do que o `tabyl()`, porque ela precisa estar em formato longo. - O tabyl é mais interessante para olhar os valores e não para fazer gráfico.
+
+```{r}
+
+cr %>%
+  count(cultivar, shade)
+
+
+```
+
+
+### `Arrange()`
+
+-   Faz uma reordenação para fins de visualização
+
+```{r}
+
+
+# Ordena do menor para o maior:
+cr %>%
+  count(zone, shade) %>% 
+  arrange(n)
+
+# Ordena por ordem alfabetica: 
+cr %>%
+  count(zone, shade) %>% 
+  arrange(shade)
+
+```
+
+# Exemplo com aplicação e visualização gráfica das funções e verbos do **dplyr**
+
+### Importa os dados
+
+```{r}
+
+library(tidyverse)
+cr <- read_csv("https://raw.githubusercontent.com/emdelponte/paper-coffee-rust-Ethiopia/master/data/survey_clean.csv")
+glimpse(cr)
+
+```
+
+### Visualização
+
+-   Vamos utilizar a função `ggplot` do pacote **ggplot2** para visualizar os dados do conjunto.
+
+```{r}
+
+library(ggthemes)
+cr %>% 
+  ggplot(aes(x= sev2, 
+             fill = region)) + 
+  geom_histogram() + 
+  facet_grid(region ~ cultivar) + 
+  scale_fill_manual(values = c("red", "blue")) +
+  theme_minimal(base_size = 14) + 
+  theme(legend.position = "bottom") + 
+  labs(y  = "Frequency", 
+       x = "Severity (%)", 
+       fill = "Region" )
+
+
+```
+
+```{r}
+
+glimpse(cr)
+library(ggthemes)
+
+cr %>% 
+  ggplot(aes(x= sev2, 
+             fill = region)) + 
+  geom_histogram(color = "white") + 
+  facet_wrap(region ~ cultivar, ncol = 2) +
+  scale_fill_manual(values = c("red", "blue")) +
+  theme_minimal(base_size = 14) + 
+  theme(legend.position = "bottom") + 
+  labs(y  = "Frequency", 
+       x = "Severity (%)", 
+       fill = "Region" )
+
+
+
+
+```
+
+```{r}
+summary(cr$inc)
+
+cr %>% 
+  group_by(cultivar) %>% 
+  summarize(sev_med= median(sev2), sev_mean = mean(sev2), sev_sd = sd(sev2))
+
+cr %>% 
+  ggplot(aes(inc, sev2)) + geom_point()
+```
+
+### Seleção e filtro
+
+Seleção de coluna e filtragem de linhas
+
+```{r}
+cr %>%
+  select( farm, region,cultivar, sev2)
+```
+
+```{r}
+cr2 <- cr %>%
+  select( farm, region,cultivar, sev2)
+```
+
+### Filtra linhas do meu conjunto
+
+```{r}
+
+cr2 <- cr %>% 
+  select(farm, region, cultivar, sev2) %>% 
+  filter(region == "Oromia")
+
+cr2
+```
+
+### Cria subconjuntos
+
+Utiliza as funções `select()` e `filter()` do pacote **dplyr** para selecionar colunas e linhas, respectivamente.
+
+```{r}
+#filtra Oromia
+cr_oromia <- cr %>% 
+  select(farm, region, cultivar, sev2) %>% 
+  filter(region == "Oromia")
+
+cr_oromia
+
+
+
+
+#filtra SNNPR
+cr_pr <- cr %>% 
+ select(farm, region, cultivar, sev2) %>% 
+  filter(region == "SNNPR") 
+
+cr_pr
+ 
+```
+
+### Visualiza os subconjuntos
+
+Gráficos `ggplot` para cada subconjunto
+
+```{r}
+
+p1 <- cr_oromia %>% 
+  ggplot(aes(cultivar, sev2,
+             fill = cultivar)) + 
+  geom_boxplot() +
+  theme_few()+
+  scale_fill_few() +
+  labs(y = "Severity (%)") +
+  coord_flip()
+
+p2 <- cr_pr %>% 
+  ggplot(aes(cultivar, sev2,
+             fill = cultivar)) + 
+  geom_boxplot() +
+  theme_few()+
+  scale_fill_few() +
+  labs(y = "Severity (%)") +
+  coord_flip()
+
+
+
+p1
+p2
+
+
+
+```
+
+```{r}
+
+
+library(patchwork)
+
+#vamos colocar um gráficos sobre o outro:
+(p1 / p2) + 
+  plot_layout(guides = "collect",
+              axes = 'collect') +
+  plot_annotation(tag_levels = 'A')
+
+
+```
+
+```{r}
+p1 <- cr_oromia %>% 
+  ggplot(aes(cultivar, sev2,
+             fill = cultivar)) + 
+  geom_boxplot() +
+  theme_few()+
+  scale_fill_few() +
+  labs(y = "Severity (%)") +
+  coord_flip()
+
+p2 <- cr_pr %>% 
+  ggplot(aes(cultivar, sev2,
+             fill = cultivar)) + 
+  geom_boxplot() +
+  theme_few()+
+  scale_fill_few() +
+  labs(y = "Severity (%)") +
+  coord_flip()
+
+
+
+p1
+p2
+```
+
+```{r}
+library(patchwork)
+
+# Colcoar título e referencia:
+
+# + ou | coloca um gráfico ao lado do outro. Se coloca / um gráfico fica sobre o outro. 
+
+(p1 / p2) + 
+  plot_layout(guides = "collect",
+              axes = 'collect') +
+  plot_annotation(title = "Coffe rust in Ethiopia",
+                  caption = "source: Del Point (2022)",
+                  tag_levels = 'A')
+
+
+```
+
+```{r}
+
+
+## inserir um histograma no meu gráfico
+
+p3 <- cr_oromia %>% 
+  ggplot(aes(x= sev2)) + 
+  geom_histogram()
+
+p1 + inset_element(p3, left = 0.6, bottom = 0.6, right = 1, top = 1)
+
+
+```

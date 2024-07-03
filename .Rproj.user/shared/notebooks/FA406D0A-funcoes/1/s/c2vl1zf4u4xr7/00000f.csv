@@ -1,0 +1,39 @@
+"0",""
+"0","glimpse(cr)"
+"1","Rows: 405"
+"1",""
+"1","
+"
+"1","Columns: 13"
+"1",""
+"1","
+"
+"1","$ farm            [3m[38;5;246m<dbl>[39m[23m 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16…
+$ region          [3m[38;5;246m<chr>[39m[23m ""SNNPR"", ""SNNPR"", ""SNNPR"", ""SNNPR"", ""SNNPR"", ""SNNPR"",…
+$ zone            [3m[38;5;246m<chr>[39m[23m ""Bench Maji"", ""Bench Maji"", ""Bench Maji"", ""Bench Maji…
+$ district        [3m[38;5;246m<chr>[39m[23m ""Debub Bench"", ""Debub Bench"", ""Debub Bench"", ""Debub B…
+$ lon             [3m[38;5;246m<dbl>[39m[23m 35.44250, 35.44250, 35.42861, 35.42861, 35.42861, 35.…
+$ lat             [3m[38;5;246m<dbl>[39m[23m 6.904722, 6.904722, 6.904444, 6.904444, 6.904444, 6.9…
+$ altitude        [3m[38;5;246m<dbl>[39m[23m 1100, 1342, 1434, 1100, 1400, 1342, 1432, 1100, 1400,…
+$ cultivar        [3m[38;5;246m<chr>[39m[23m ""Local"", ""Mixture"", ""Mixture"", ""Local"", ""Local"", ""Mix…
+$ shade           [3m[38;5;246m<chr>[39m[23m ""Sun"", ""Mid shade"", ""Mid shade"", ""Sun"", ""Sun"", ""Mid s…
+$ cropping_system [3m[38;5;246m<chr>[39m[23m ""Plantation"", ""Plantation"", ""Plantation"", ""Plantation…
+$ farm_management [3m[38;5;246m<chr>[39m[23m ""Unmanaged"", ""Minimal"", ""Minimal"", ""Unmanaged"", ""Unma…
+$ inc             [3m[38;5;246m<dbl>[39m[23m 86.70805, 51.34354, 43.20000, 76.70805, 47.15808, 51.…
+$ sev2            [3m[38;5;246m<dbl>[39m[23m 55.57986, 17.90349, 8.25120, 46.10154, 12.25167, 19.9…"
+"1",""
+"1","
+"
+"0","library(ggthemes)"
+"0",""
+"0","cr %>% "
+"0","  ggplot(aes(x= sev2, "
+"0","             fill = region)) + "
+"0","  geom_histogram(color = ""white"") + "
+"0","  facet_wrap(region ~ cultivar, ncol = 2) +"
+"0","  scale_fill_manual(values = c(""red"", ""blue"")) +"
+"0","  theme_minimal(base_size = 14) + "
+"0","  theme(legend.position = ""bottom"") + "
+"0","  labs(y  = ""Frequency"", "
+"0","       x = ""Severity (%)"", "
+"0","       fill = ""Region"" )"

@@ -1,0 +1,4 @@
+"0","# bg- muda a cor de fundo."
+"0",""
+"0","ggsave(""plot2.png"", bg = ""white"", dpi = 600)"
+"2","[38;5;252mSaving 7.29 x 4.5 in image[39m"

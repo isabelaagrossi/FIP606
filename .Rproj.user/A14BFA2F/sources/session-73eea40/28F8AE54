@@ -1,0 +1,33 @@
+{
+    "id": "28F8AE54",
+    "path": "~/github/FIP606/funcoes.qmd",
+    "project_path": "funcoes.qmd",
+    "type": "quarto_markdown",
+    "hash": "0",
+    "contents": "",
+    "dirty": false,
+    "created": 1719948825585.0,
+    "source_on_save": false,
+    "relative_order": 5,
+    "properties": {
+        "rmdVisualMode": "false",
+        "rmdVisualWrapConfigured": "true",
+        "tempName": "Untitled1",
+        "source_window_id": "",
+        "Source": "Source",
+        "docOutlineVisible": "1",
+        "rmdVisualCollapsedChunks": "",
+        "cursorPosition": "275,155",
+        "scrollLine": "0",
+        "rmdVisualModeLocation": "21:0",
+        "docOutlineSize": "165"
+    },
+    "folds": "",
+    "lastKnownWriteTime": 1720030503,
+    "encoding": "UTF-8",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1720030503481,
+    "read_only": false,
+    "read_only_alternatives": []
+}

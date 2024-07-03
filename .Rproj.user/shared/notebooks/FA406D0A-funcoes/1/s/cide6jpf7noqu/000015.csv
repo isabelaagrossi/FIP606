@@ -1,0 +1,5 @@
+"0","  "
+"0","# Contar quantas zonas tenho em cada distrito. Deixa meu arquivo em formato longo, onde repete os nome da zone. "
+"0",""
+"0","cr %>%"
+"0","  count(zone, district)"

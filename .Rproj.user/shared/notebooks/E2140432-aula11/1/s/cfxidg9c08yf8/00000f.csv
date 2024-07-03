@@ -1,0 +1,51 @@
+"0",""
+"0","bra <-ggplot(BRA) +"
+"0","  geom_sf(fill = ""black"","
+"0","          color = ""white"","
+"0","          linewidth = 0.3) +"
+"0"," geom_sf(data = MG, fill = ""black"") +"
+"0","  geom_point(data = sbr, aes(longitude, latitude),"
+"0","             color = ""white"") +"
+"0","  theme_map() +"
+"0","  annotation_north_arrow(which_north = ""grid"")"
+"0",""
+"0","library(plotly)"
+"2","Warning: package ‘plotly’ was built under R version 4.3.3"
+"2","Registered S3 method overwritten by 'data.table':
+  method           from
+  print.data.table     
+"
+"2","Registered S3 methods overwritten by 'htmltools':
+  method               from         
+  print.html           tools:rstudio
+  print.shiny.tag      tools:rstudio
+  print.shiny.tag.list tools:rstudio
+"
+"2","Registered S3 method overwritten by 'htmlwidgets':
+  method           from         
+  print.htmlwidget tools:rstudio
+"
+"2","
+Attaching package: ‘plotly’
+
+"
+"2","The following object is masked from ‘package:ggplot2’:
+
+    last_plot
+
+"
+"2","The following object is masked from ‘package:stats’:
+
+    filter
+
+"
+"2","The following object is masked from ‘package:graphics’:
+
+    layout
+
+"
+"0","ggplotly(bra)"
+"2","Warning: geom_GeomNorthArrow() has yet to be implemented in plotly.
+  If you'd like to see this geom implemented,
+  Please open an issue with your example code at
+  https://github.com/ropensci/plotly/issues"

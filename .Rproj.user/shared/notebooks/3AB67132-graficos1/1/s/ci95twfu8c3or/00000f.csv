@@ -1,0 +1,5 @@
+"0",""
+"0","cr %>% "
+"0","  ggplot(aes(x= inc)) +"
+"0","  geom_histogram()"
+"0",""

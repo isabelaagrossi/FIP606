@@ -1,0 +1,5 @@
+"0",""
+"0","# Ordena por ordem alfabetica: "
+"0","cr %>%"
+"0","  count(zone, shade) %>% "
+"0","  arrange(shade)"

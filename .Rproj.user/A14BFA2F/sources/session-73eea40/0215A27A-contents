@@ -1,0 +1,107 @@
+---
+title: ""
+---
+
+
+
+# Importação e dados do próprio R:
+
+```{r}
+
+library(agridat)
+cars
+
+
+```
+
+
+```{r}
+
+library(ec50estimator)
+df1 <- multi_isolate
+
+```
+
+
+# Planilhas do excel:
+
+
+```{r}
+
+
+
+library(readxl)
+# Utilizando a primeira aba da planilha "magnesio"
+df2 <- read_excel ("dados-diversos.xlsx")
+
+# Utilizando a segunda aba da planilha "mortalidade"
+df3 <- read_excel("dados-diversos.xlsx", 4)
+
+# Utilizando a terceira aba da planilha "micelial"
+df4 <- read_excel("dados-diversos.xlsx", "micelial")
+
+
+
+```
+
+
+# Arquivo .csv:
+
+```{r}
+
+library(tidyverse)
+df5 <- read_csv("dados-diversos.csv", "milho")
+
+
+```
+
+
+
+# Dados em planilha online: 
+
+```{r}
+
+
+library(gsheet)
+df6 <- gsheet2tbl("https://docs.google.com/spreadsheets/d/1bq2N19DcZdtax2fQW9OHSGMR0X2__Z9T/edit#gid=983033137")
+
+
+```
+
+
+# Visualização dos dados 
+
+```{r}
+library(ggthemes)
+library(ggplot2)
+
+g1 <- df6 %>% 
+  ggplot(aes(trat, comp))+
+  geom_boxplot(outlier.colour = NA,
+               fill = "darkmagenta") + 
+  geom_jitter(width = 0.05, color = "black", shape = 2, size = 3)+
+  theme_clean()+
+  labs(x = "Tratamento",
+       y = "Comprimento (mm)", 
+       title = "Meu primeiro ggplot", 
+       caption = "fonte: Dados diversos") +
+  scale_y_continuous(limits = c(0,20), n.breaks = 10)
+
+g1
+
+# Para salvar o ggplot na pasta em PNG, PDF, JPEG e outros.
+ggsave("plot1.png", bg= "white")
+
+
+
+```
+
+
+
+
+
+
+
+
+
+

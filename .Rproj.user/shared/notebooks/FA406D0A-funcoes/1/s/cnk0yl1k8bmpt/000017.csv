@@ -1,0 +1,4 @@
+"0",""
+"0","cr %>% "
+"0","  select(farm, region, inc) %>% "
+"0","  filter(inc > 50)"

@@ -1,0 +1,6 @@
+"0",""
+"0",""
+"0","# Para quando tem muitas colunas que quero excluir."
+"0",""
+"0","cr %>% "
+"0","  select(- c(inc, sev2))"

@@ -1,0 +1,6 @@
+"0",""
+"0","library(leaflet)"
+"2","Warning: package ‘leaflet’ was built under R version 4.3.3"
+"0","leaflet() |> "
+"0","  addTiles() |> "
+"0","  setView(lng = -42.8825 , lat = -20.7546, zoom = 15)"

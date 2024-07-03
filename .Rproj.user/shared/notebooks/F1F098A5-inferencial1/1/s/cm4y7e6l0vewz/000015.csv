@@ -1,0 +1,4 @@
+"0",""
+"0",""
+"0","m1_medias <- emmeans(m1, ~ spray,)"
+"0","plot(m1_medias)"

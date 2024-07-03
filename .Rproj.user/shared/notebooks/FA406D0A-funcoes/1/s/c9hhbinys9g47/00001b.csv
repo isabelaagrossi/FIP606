@@ -1,0 +1,6 @@
+"0",""
+"0",""
+"0","# Selecionei todas as colunas, menos a ""sev2""."
+"0",""
+"0","cr %>% "
+"0","  select(-sev2)"

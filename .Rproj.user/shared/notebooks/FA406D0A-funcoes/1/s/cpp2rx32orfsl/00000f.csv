@@ -1,0 +1,6 @@
+"0",""
+"0",""
+"0","# Ordena do menor para o maior:"
+"0","cr %>%"
+"0","  count(zone, shade) %>% "
+"0","  arrange(n)"

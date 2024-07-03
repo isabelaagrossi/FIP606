@@ -1,0 +1,5 @@
+"0",""
+"0","# Estou selecionando apenas algumas colunas, 1 a 10 e a coluna 13."
+"0",""
+"0","cr %>% "
+"0","  select(1:10, 13)"

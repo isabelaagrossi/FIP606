@@ -1,0 +1,582 @@
+---
+title: ""
+---
+
+
+
+### Importa os dados
+
+```{r}
+
+library(tidyverse)
+
+cr <- read_csv("https://raw.githubusercontent.com/emdelponte/paper-coffee-rust-Ethiopia/master/data/survey_clean.csv")
+
+glimpse(cr)
+
+
+```
+
+## Diferentes tipos e customização de gráficos para visualização dos dados:
+
+### **1- Gráficos em barras:**
+
+```{r}
+
+cr %>%
+  count(zone, shade) %>% 
+  arrange(- n) %>% 
+  ggplot(aes(zone, n, fill = shade)) +
+  geom_col()
+
+
+```
+
+**-> Costumizando o ggplot anterior:**
+
+1º Evitar a sobreposição dos nomes: inverte as barras de vertical para horizontal, utilizando a função `coord_flip()`.
+
+```{r}
+
+cr %>%
+  count(zone, shade) %>% 
+  arrange(- n) %>% 
+  ggplot(aes(zone, n, fill = shade)) +
+  geom_col()+
+  coord_flip()
+
+
+```
+
+**- Customizando o gráfico:**
+
+Para tirar no eixo x o escrito `zone`: `labs(x= "")`
+
+Título do gráfico: `title= "XXX"`.
+
+Colocar uma fonte: `caption = "XXX"`.
+
+Trocar o titulo da legenda: `Fiil = "XXX"`.
+
+A escala de cor que estamos usando aqui é do sombreamento.
+
+```{r}
+
+cr %>%
+  count(zone, shade) %>% 
+  arrange(- n) %>% 
+  ggplot(aes(zone, n, fill = shade)) +
+  geom_col()+
+  coord_flip() +
+  labs(x= "", y = "Número de fazendas", title = "Ferrugem do café na Etiópia", caption = "Belachew et al. (2020)", fill = "Levels of shade") +
+  scale_y_continuous(limits = c(0,80), n.breaks = 6)
+    
+    
+    
+```
+
+**-> Colocar as barras do gráfico em preto e branco :**
+
+```{r}
+
+cr %>%
+  count(zone, shade) %>% 
+  arrange(- n) %>% 
+  ggplot(aes(zone, n, fill = shade)) +
+  geom_col()+
+  coord_flip() +
+  labs(x= "", y = "Número de fazendas", title = "Ferrugem do café na Etiópia", caption = "Belachew et al. (2020)", fill = "Levels of shade") +
+  scale_y_continuous(limits = c(0,80), n.breaks = 6) +
+  scale_fill_grey()
+
+
+
+
+```
+
+**-> Tirando o tema cinza no fundo.**
+
+**cowplot** - tem alguns temas diferentes.
+
+```{r}
+
+library(cowplot)
+
+cr %>%
+  count(zone, shade) %>% 
+  arrange(- n) %>% 
+  ggplot(aes(zone, n, fill = shade)) +
+  geom_col()+
+  coord_flip() +
+  labs(x= "", y = "Número de fazendas", title = "Ferrugem do café na Etiópia", caption = "Belachew et al. (2020)", fill = "Levels of shade") +
+  scale_y_continuous(limits = c(0,80), n.breaks = 6) +
+  scale_fill_grey() +
+  theme_half_open(font_size = 12) 
+  
+
+  
+```
+
+**-> Reposicionar a legenda e colocar em outra posição:**
+
+```{r}
+
+cr %>%
+  count(zone, shade) %>% 
+  arrange(- n) %>% 
+  ggplot(aes(zone, n, fill = shade)) +
+  geom_col()+
+  coord_flip() +
+  labs(x= "", y = "Número de fazendas", title = "Ferrugem do café na Etiópia", caption = "Belachew et al. (2020)", fill = "Levels of shade") +
+  scale_y_continuous(limits = c(0,80), n.breaks = 6) +
+  scale_fill_grey() +
+  theme_half_open(font_size = 12) +
+  theme(legend.position = "bottom" )
+
+```
+
+**-> Para colocar as barras do gráfico encostado no eixo y:**
+
+Coloca : `expand = c(0,0)` em `scale_y_continuous()`
+
+```{r}
+
+cr %>%
+  count(zone, shade) %>% 
+  arrange(- n) %>% 
+  ggplot(aes(zone, n, fill = shade)) +
+  geom_col()+
+  coord_flip() +
+  labs(x= "", y = "Número de fazendas", title = "Ferrugem do café na Etiópia", caption = "Belachew et al. (2020)", fill = "Levels of shade") +
+  scale_y_continuous(expand = c(0,0),
+                     limits = c(0,80), 
+                     n.breaks = 6) +
+  scale_fill_grey() +
+  theme_half_open(font_size = 12) +
+  theme(legend.position = "bottom" )
+
+```
+
+###  **2- Gráfico de Histograma**
+
+Outro tipo de gráfico utilizando uma variavel continua.
+
+-   Quero fazer um histograma de frequencia e incidencia ou severidade.
+
+```{r}
+
+cr %>% 
+  ggplot(aes(x= inc)) +
+  geom_histogram()
+
+```
+
+**-> definindo a quantidade de barras dentro do histograma**
+
+```{r}
+
+cr %>% 
+  ggplot(aes(x= inc)) +
+  geom_histogram(bins = 10)
+
+```
+
+**Aparecer barrinhas individuais:**
+
+```{r}
+
+
+cr %>% 
+  ggplot(aes(x= inc)) +
+  geom_histogram(bins = 10, 
+                 color = "white")
+
+```
+
+**-> Preenchimento diferente de cinza:**
+
+```{r}
+
+
+cr %>% 
+  ggplot(aes(x= inc)) +
+  geom_histogram(bins = 10, 
+                 color = "white",
+                 fill = "darkmagenta")
+```
+
+**-> Vamos fazer um gráfico para cada tipo de sombreamento**
+
+-   Painel da distribuição por sombremaento. Função: `facet_wrap`
+
+Será que existe dirença na distribuição da incidencia de acordo com a caracteristica de sombreamento de cada fazenda.
+
+```{r}
+
+
+cr %>% 
+  ggplot(aes(x= inc)) +
+  geom_histogram(bins = 10, 
+                 color = "white",
+                 fill = "darkmagenta") +
+  facet_wrap(~ shade)
+```
+
+**OBS:** Na situação de sombreamento "SUN" tem uma incidencia mais alta.
+
+O "FULL SHADE", quer dizer que o café cultivado na sombra tem menos ferrugem. E o café cultivado a ceu aberto "SUN", tende a ter mais incidencia de ferrugem.
+
+**-> Agora quero ver severidade.**
+
+```{r}
+
+
+cr %>% 
+  ggplot(aes(x= sev2)) +
+  geom_histogram(bins = 10, 
+                 color = "white",
+                 fill = "darkmagenta") +
+  facet_wrap(~ shade)
+```
+
+--> Quero saber agora se tem efeito de cultivar:
+
+```{r}
+
+
+cr %>% 
+  ggplot(aes(x= sev2)) +
+  geom_histogram(bins = 10, 
+                 color = "white",
+                 fill = "darkmagenta") +
+  facet_wrap(~ cultivar)
+
+```
+
+**OBS:** a cultivar local tende a ter maior severidade porque também são cultivadas a céu aberto.
+
+### **3- Boxplot**
+
+
+
+```{r}
+
+cr %>% 
+  ggplot(aes(cultivar, sev2)) +
+  geom_boxplot()
+  
+
+```
+
+--> Fazendo agora por região
+
+```{r}
+
+cr %>% 
+  ggplot(aes(cultivar, sev2)) +
+  geom_boxplot() +
+  facet_wrap(~ region)
+
+
+```
+
+**OBS:** Não tem efeito de região. Não tem efeito na severidade nas diferentes cultivares nas duas regiões analisadas.
+
+--> `facet_wrap` que combina duas colunas
+
+```{r}
+
+cr %>% 
+  ggplot(aes(shade, sev2)) +
+  geom_boxplot() +
+  facet_wrap(region ~ zone)
+```
+
+--> `Facet_grid`
+
+```{r}
+
+cr %>% 
+  ggplot(aes(shade, sev2)) +
+  geom_boxplot() +
+  facet_grid(region ~ zone)
+
+```
+
+OBS:Então nos vimos como fazer um histograma para uma variavel continua e como quebrar os gráficos fazendo um painel `facet_wrap`
+
+### **4- Gráfico de dispersão de pontos.**
+
+--> Pergunta a ser respondida: existe relação entre a incidência e a severidade (duas variaveis continuas)?
+
+```{r}
+
+cr %>%
+  ggplot(aes(inc, sev2)) +
+  geom_point()
+  
+  
+
+
+```
+
+--> Outra pergunta: existe algum fator que afeta essa relação, por exemplo a cultivar
+
+```{r}
+
+# "~" é a condição.  
+
+cr %>%
+  ggplot(aes(inc, sev2)) +
+  geom_point() +
+  facet_wrap(~ cultivar)
+
+```
+
+--> Customização deste plot:
+
+```{r}
+library(cowplot)
+
+cr %>%
+  ggplot(aes(inc, sev2)) +
+  geom_point() +
+  theme_cowplot() +
+  labs(y = "Severity (%)", x = "Incidence (%)")
+  
+
+```
+
+--> Quero colocar uma anotação neste gráfico:
+
+De maneira hipotetica.
+
+Colocar uma camada de anotação em cima do gráfico com o valor da correlação calculada a baixo. Com a função `annotate`
+
+Calculando a correlação:
+
+```{r}
+cor(cr$inc, cr$sev2)
+
+```
+
+Para fazer anotação no plot- `label = "R = 0,88 P < 0.01`
+
+```{r}
+
+cr %>%
+  ggplot(aes(inc, sev2)) +
+  geom_point() +
+  theme_cowplot() +
+  labs(y = "Severity (%)", x = "Incidence (%)") +
+  annotate(geom = "text",
+           x = 20,
+           y = 50,
+           label = "R = 0,88 P < 0.01")
+  
+  
+  
+
+```
+
+#### Para salvar esse gráfico para utilizar no artigo
+
+```{r}
+
+cr %>%
+  ggplot(aes(inc, sev2)) +
+  geom_point() +
+  theme_cowplot() +
+  labs(y = "Severity (%)", x = "Incidence (%)") +
+  annotate(geom = "text",
+           x = 20,
+           y = 50,
+           label = "R = 0,88
+P < 0.01")
+
+
+ggsave("plot2.png")   # Fazendo desta forma ele salva com o fundo cinza.
+
+# bg- muda a cor de fundo.
+
+ggsave("plot2.png", bg = "white", dpi = 600)
+
+
+# Tamanho da imagem
+
+ggsave("plot2.png", bg = "white", dpi = 600,
+       width = 6, height = 6)
+
+```
+
+--> Modificando as fontes:
+
+Dependo do tema, aceita-se mudar atraves da função `font_family()`.
+
+```{r}
+
+
+cr %>%
+  ggplot(aes(inc, sev2)) +
+  geom_point() +
+  theme_cowplot(font_family = "times") +
+  labs(y = "Severity (%)", x = "Incidence (%)") +
+  annotate(geom = "text",
+           x = 20,
+           y = 50,
+           label = "R = 0,88
+P < 0.01")
+
+
+# outro tipo de tema que aceita mudar fonte.
+
+cr %>%
+  ggplot(aes(inc, sev2)) +
+  geom_point() +
+  theme_minimal_grid(font_family = "times") +
+  labs(y = "Severity (%)", x = "Incidence (%)") +
+  annotate(geom = "text",
+           x = 20,
+           y = 50,
+           label = "R = 0,88
+P < 0.01")
+
+```
+
+--> Colocando limite de valores no eixo x e eixo y:
+
+```{r}
+
+cr %>%
+  ggplot(aes(inc, sev2)) +
+  geom_point() +
+  theme_cowplot(font_family = "times") +
+  labs(y = "Severity (%)", x = "Incidence (%)") +
+  annotate(geom = "text",
+           x = 20,
+           y = 50,
+           label = "R = 0,88
+P < 0.01") +
+  ylim(0,100) +
+  xlim(0,100)
+
+```
+
+--> Mudar a cor dos pontos de acordo com a cultivar:
+
+Mudamos na `aes`
+
+```{r}
+
+cr %>%
+  ggplot(aes(inc, sev2, color = cultivar)) +
+  geom_point() +
+  theme_cowplot(font_family = "Times") +
+  labs(y = "Severity (%)", x = "Incidence (%)") +
+  annotate(geom = "text",
+           x = 20,
+           y = 50,
+           label = "R = 0,88
+P < 0.01") +
+  ylim(0,100) +
+  xlim(0,100)
+
+```
+
+--> Mudar a posição da legenda:
+
+```{r}
+
+
+cr %>%
+  ggplot(aes(inc, sev2, color = cultivar)) +
+  geom_point() +
+  theme_cowplot(font_family = "Times") +
+  labs(y = "Severity (%)", x = "Incidence (%)") +
+  annotate(geom = "text",
+           x = 20,
+           y = 50,
+           label = "R = 0,88
+P < 0.01") +
+  ylim(0,100) +
+  xlim(0,100) +
+  theme(legend.position = "top")
+
+```
+
+--> Mudar o tamanho dos elementos no `cowplot`
+
+```{r}
+
+
+cr %>%
+  ggplot(aes(inc, sev2, color = cultivar)) +
+  geom_point() +
+  theme_cowplot(font_family = "Times",
+                font_size = 10) +
+  labs(y = "Severity (%)", x = "Incidence (%)", title = "", color = "Cultivar") +
+  annotate(geom = "text",
+           x = 20,
+           y = 50,
+           label = "R = 0,88
+P < 0.01") +
+  ylim(0,100) +
+  xlim(0,100) +
+  theme(legend.position = "top")
+
+
+```
+
+--> Mudar a escala de cores
+
+Podemos colocar manual `scale_color_manual()` igual feito abaixo ou colocar uma paleta pronta.
+
+```{r}
+
+cr %>%
+  ggplot(aes(inc, sev2, color = cultivar)) +
+  geom_point() +
+  theme_cowplot(font_family = "Times",
+                font_size = 10) +
+  labs(y = "Severity (%)", x = "Incidence (%)", title = "", color = "Cultivar") +
+  annotate(geom = "text",
+           x = 20,
+           y = 50,
+           label = "R = 0,88
+P < 0.01") +
+  ylim(0,100) +
+  xlim(0,100) +
+  theme(legend.position = "top") +
+  scale_color_manual(values = c("steelblue",
+                                "darkorange",
+                                "black"))
+
+
+
+
+```
+
+Obs: **ggthemes**- além de dar vários temas diferentes, ele trás também várias paletas de cores.
+
+```{r}
+library(ggthemes)
+
+cr %>%
+  ggplot(aes(inc, sev2, color = cultivar)) +
+  geom_point() + 
+  theme_few() +
+  labs(y = "Severity (%)", x = "Incidence (%)", title = "", color = "Cultivar") +
+  annotate(geom = "text",
+           x = 20,
+           y = 50,
+           label = "R = 0,88
+P < 0.01") +
+  ylim(0,100) +
+  xlim(0,100) +
+  theme(legend.position = "top") +
+  scale_color_colorblind()
+
+```
+
+
+

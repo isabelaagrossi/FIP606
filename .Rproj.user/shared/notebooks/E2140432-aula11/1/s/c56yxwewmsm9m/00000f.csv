@@ -1,0 +1,9 @@
+"0",""
+"0",""
+"0","library(leaflet)"
+"0","leaflet(sbr) |> "
+"0","  addTiles() |> "
+"0","  #setView(lng = -42.8825 , lat = -20.7546, zoom = 5) |> "
+"0","  addCircleMarkers(radius = 2)"
+"2","Assuming ""longitude"" and ""latitude"" are longitude and latitude, respectively
+"

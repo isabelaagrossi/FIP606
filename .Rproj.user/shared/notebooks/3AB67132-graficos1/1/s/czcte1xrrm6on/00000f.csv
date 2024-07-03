@@ -1,0 +1,8 @@
+"0",""
+"0","# ""~"" é a condição.  "
+"0",""
+"0","cr %>%"
+"0","  ggplot(aes(inc, sev2)) +"
+"0","  geom_point() +"
+"0","  facet_wrap(~ cultivar)"
+"0",""

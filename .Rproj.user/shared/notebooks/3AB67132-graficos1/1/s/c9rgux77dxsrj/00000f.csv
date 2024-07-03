@@ -1,0 +1,6 @@
+"0",""
+"0","cr %>%"
+"0","  count(zone, shade) %>% "
+"0","  arrange(- n) %>% "
+"0","  ggplot(aes(zone, n, fill = shade)) +"
+"0","  geom_col()"

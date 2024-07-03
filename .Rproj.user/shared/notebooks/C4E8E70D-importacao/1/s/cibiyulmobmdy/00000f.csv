@@ -1,0 +1,7 @@
+"0",""
+"0",""
+"0","library(gsheet)"
+"2","Warning: package ‘gsheet’ was built under R version 4.3.3"
+"0","df6 <- gsheet2tbl(""https://docs.google.com/spreadsheets/d/1bq2N19DcZdtax2fQW9OHSGMR0X2__Z9T/edit#gid=983033137"")"
+"0",""
+"0",""

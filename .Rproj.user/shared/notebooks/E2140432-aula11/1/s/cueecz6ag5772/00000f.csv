@@ -1,0 +1,7 @@
+"0",""
+"0","library(gsheet)"
+"0",""
+"0","mapa <- gsheet2tbl(""https://docs.google.com/spreadsheets/d/1pAIFKsdKxk_UQQXdYwIO-O5NOkYNhpclImJcLziYnk4/edit#gid=50258992"")"
+"0",""
+"0",""
+"0",""

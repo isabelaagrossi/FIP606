@@ -1,0 +1,6 @@
+"0",""
+"0",""
+"0","#Estou pegando todas as zonas menos a Bench MAji. **""!=""**"
+"0","cr %>% "
+"0","  select(farm, region, zone, inc) %>% "
+"0","  filter(zone != ""Bench Maji"")"

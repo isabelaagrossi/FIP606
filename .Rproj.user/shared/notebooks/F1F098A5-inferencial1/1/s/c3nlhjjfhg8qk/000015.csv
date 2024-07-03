@@ -1,0 +1,2 @@
+"0","# Testar normalidade:"
+"0","hist(m1$residuals)"

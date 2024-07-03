@@ -1,0 +1,7 @@
+"0","library(cowplot)"
+"0",""
+"0","cr %>%"
+"0","  ggplot(aes(inc, sev2)) +"
+"0","  geom_point() +"
+"0","  theme_cowplot() +"
+"0","  labs(y = ""Severity (%)"", x = ""Incidence (%)"")"

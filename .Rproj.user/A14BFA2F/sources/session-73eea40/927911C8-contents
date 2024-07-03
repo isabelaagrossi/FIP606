@@ -1,0 +1,494 @@
+---
+title: "Terça-feira"
+format: html
+editor: visual
+---
+
+# Analise inferencial:
+
+Fazer teste de hipotese para diferentes deliniamentos.
+
+## Importando os dados
+
+```{r}
+library(gsheet)
+
+magnesio <- gsheet2tbl("https://docs.google.com/spreadsheets/d/1bq2N19DcZdtax2fQW9OHSGMR0X2__Z9T/edit#gid=983033137")
+
+
+
+```
+
+### Visualizar esses dados:
+
+```{r}
+
+magnesio |> 
+  ggplot(aes(trat, comp)) +
+  geom_point() +
+  geom_jitter(width = 0.05)+
+  stat_summary(fun = "mean", 
+               geom = "point",
+               size = 4, 
+               color = "red")
+
+```
+
+OBS: O ponto medio está distante um do outro. Faremos um teste de comparação de médias. Rejeito a hipotese nula e aceito a hipotese deles serem significativos.
+
+## Teste t: ( Teste parametrico)
+
+1º Conhecer como deve estar preparado os dados para o teste t.
+
+### Prepara dos dados:
+
+1º- Transformar do formato largo para o formato longo:
+
+pivot_wider
+
+```{r}
+
+magnesio2 <- magnesio |> 
+  pivot_wider(1, names_from = "trat",
+              values_from = "comp")
+
+magnesio2
+
+
+
+
+```
+
+## t-test
+
+Para aceitar as premissas do teste t, precisamos observar antes: a normalidade e se as variancias são homogeneas.
+
+Se for heterogenia, Precisa modificar no teste-T, variancia equivalente para falso ("var.equal = FALSE"), se for homogenea modifica para "var.equal= TRUE"
+
+```{r}
+
+# Variancia homogenea: "var.test"- geralmente faz isso antes do teste t. Testa a hipotese nula. Como o P-valor é maior que 0,005, não rejeitamos a hipotese nula. 
+
+var.test(magnesio2$Mg2, magnesio2$control)
+
+t.test(magnesio2$Mg2, magnesio2$control,
+       var.equal = TRUE)
+
+
+
+t.test(magnesio2$Mg2, magnesio2$control)
+
+# O P-valor foi menor que 0,05, indicando que são diferentes as medias dos dois grupos. 
+
+
+
+
+```
+
+```{r}
+# Se colocar a função "attach()" não preciso escrever "magnesio2$Mg2, magnesio2$control". Para colocar como dataframe o mg2 e o cotrole: (Desagrega os vetores) 
+
+attach(magnesio2)
+Mg2
+control  
+
+
+
+```
+
+### Testando as premissas de normalidade:
+
+Neste caso, está tudo normal. É um experimento cuja a variavel reposta é o comprimento. Númerica do tipo continua. E as variaveis são homogeneas. Podemos prosseguir com o teste T.
+
+```{r}
+
+
+qqnorm(Mg2)
+qqline(Mg2)
+
+Mg2
+control
+
+# Gera um gráfico e para testar normalidade, a maioria dos pontos tem que estar acima/proximo desta linha que passa no gráfico. (Isso é apenas visual, não testa nada)
+## Aparentemente tem normalidade dos dados originais, não está falando dos dados no residuo ainda.
+
+qqnorm(control)
+qqline(control)
+
+# No shapiro teste: A hipotese nula é que tem uma distribuição normal. O p-valor do Mg2 não rejeitamos a hipotese nulaP-valor é maior que 0,05. Então a inferencia visual está batendo com o teste. 
+
+shapiro.test(Mg2)
+shapiro.test(control)
+
+# Fazendo um histograma:
+
+hist(Mg2)
+hist(control)
+
+t.test(Mg2, control,
+       var.equal = TRUE)
+
+
+
+```
+
+# Apresentando esses dados em um artigo:
+
+Tabela Gráfico: mostrar os resultados de maneira visual
+
+Obs: Mediana e medias estão proximas, signifca que tem uma distribuição normal.
+
+```{r}
+
+
+magnesio |> 
+  ggplot(aes(trat, comp)) +
+  geom_boxplot() +
+  #geom_point() +
+  stat_summary(fun = "mean", 
+               geom = "point",
+               size = 4, 
+               color = "red")+
+  annotate("text", x= 2, y= 15, label = "P < 0,01")+
+  ylim(0,20)
+
+
+```
+
+#### Outra forma de utilizar é trabalhar com inferencia visual: Intervalo de confiança a 95% considerando uma distribuição normal.
+
+Vamos utilizar o ponto medio e o intervalo de confiança a 95%. diferença significativa entre grupos.
+
+mu = media sd = desvio padrão se = erro padrão ciu= intervalo de confiança inferior cil = intervalo de confiança superior
+
+Apos concluir o gráfico com o intervalo de confiança, temos que dizer que a barrinha é o IC a 55%.
+
+```{r}
+
+
+
+# Calculando o intervalo de confiança de maneira manual:
+
+
+  magnesio3 <- magnesio |> 
+  group_by(trat) |> 
+  summarise(mu= mean(comp),
+            sd=  sd(comp),
+            n= n(),
+            se = sd/sqrt(n),
+            ciu = mu + (qt(0.025, df = n-1)*se),
+            cil = mu - (qt(0.025, df = n-1)*se))
+
+magnesio3 |> 
+  ggplot(aes(trat, mu, color = trat))+
+         geom_point()+
+  geom_errorbar(aes(min = cil,
+                    max = ciu),
+                width = 0.01)+
+  ylim(0, 20)
+  
+
+# Tem como calcular o intervalo de confiança de maneira automatica também. 
+
+
+
+
+```
+
+# Se for para falta de normalidade: usa um teste não parametrico que é equivalente ao teste parametrico - wilcox.test
+
+```{r}
+
+# Para amostras independentes.
+
+wilcox.test(Mg2, control)
+
+
+```
+
+### Além do teste não paramétrico, pode transformar os dados para log
+
+```{r}
+t.test(log(Mg2), log(control),
+       var.equal =  TRUE)
+
+#precisa verificar se tem normalidade quando usa a transformação
+
+qqnorm(log(Mg2))
+qqline(log(Mg2))
+
+qqnorm(log(control))
+qqline(log(control))
+```
+
+## Um conjunto de dados com dependencia:
+
+### Duas variáveis dependentes
+
+Dois grupos com dependencia.
+
+```{r}
+
+# O mesmo individuo avalia em dois tempos diferentes. É o caso também para o tempo, onde avaliamos um vaso em varios tempo.  
+
+escala <- gsheet2tbl("https://docs.google.com/spreadsheets/d/1bq2N19DcZdtax2fQW9OHSGMR0X2__Z9T/edit#gid=1729131173")
+
+
+escala |> 
+  ggplot(aes(assessment, acuracia), acuracia)+
+  geom_point()+
+  geom_boxplot()
+
+
+# Alterar a onde de apresentação no eixo X. 
+escala |> 
+  ggplot(aes(reorder(assessment, acuracia), acuracia))+
+  geom_point()+
+  geom_boxplot()
+
+    
+  
+```
+
+###passar do formato longo para formato largo:
+
+```{r}
+escala2 <- escala |> 
+  select(assessment, rater, acuracia) |> 
+  pivot_wider(1, names_from = "assessment",
+              values_from = "acuracia")
+
+```
+
+### teste de variancias homogeneas e normalidade
+
+```{r}
+attach(escala2)
+
+#as variamcias são homogeneas.
+#rejeita a hipótese H0 (VARIANCIAS HETEROGENEAS)
+
+var.test(Unaided, Aided1)
+
+
+#testar normalidade: sim, dados normais
+
+
+
+shapiro.test(Unaided)
+shapiro.test(Aided1)
+
+
+#t.test
+t.test(Aided1, Unaided,
+       var.equal = FALSE,
+       paired = TRUE)
+```
+
+###grafico para apresentação
+
+```{r}
+escala |> 
+  ggplot(aes(reorder(assessment, acuracia), acuracia,
+             group = rater))+
+  geom_point(stat = "identity", size = 3, shape = 1)+
+  geom_line(size = 1, color = "gray")+
+  annotate("text",
+           x = 2.3,
+           y= 0.9,
+           label = "P < 0.001") #+
+  #facet_wrap(~ rater, nrow = 5)
+```
+
+### Deliniamento com Tres ou mais grupos
+
+Não fazemos o test t, porque ele é para até 2 tratamentos. Faz analise de variancia (ANOVA) quando tem 3 ou mais tratammentos.
+
+```{r}
+micelial <- gsheet2tbl("https://docs.google.com/spreadsheets/d/1bq2N19DcZdtax2fQW9OHSGMR0X2__Z9T/edit#gid=959387827")
+```
+
+#Visualiza
+
+```{r}
+micelial |> 
+  ggplot(aes(especie, tcm))+
+  geom_jitter(width = 0.1)+
+  geom_boxplot()
+
+#as variância não parecem ser homogeneas 
+```
+
+##anova
+
+```{r}
+m1 <- aov(tcm ~ especie, data =  micelial)
+
+anova(m1)
+
+m11 <- lm(tcm ~ especie, data =  micelial)
+
+anova(m11)
+
+#normalidade DOS REÍDUOS
+hist(m11$residuals)
+qqnorm(m11$residuals)
+qqline(m11$residuals)
+
+#variancia
+library(performance)
+check_normality(m1)
+check_heteroscedasticity(m1)
+
+library(DHARMa)
+plot(simulateResiduals(m1))
+```
+
+##teste comparação de médias
+
+```{r}
+library(emmeans)
+
+means_m11 <- emmeans(m11, ~ especie)
+means_m11
+
+means_m11df <- data.frame(means_m11)
+
+means_m11df |> 
+  ggplot(aes(especie, emmean))+
+  geom_point()+
+  geom_errorbar(aes(min = lower.CL,
+                    max = upper.CL), 
+                width = 0.01)
+
+#comparação par a par
+pwpm(means_m11)
+
+library(multcompView)
+library(multcomp)
+
+cld(means_m11)
+```
+
+###insetos
+
+```{r}
+insetos <- InsectSprays
+
+#visualizar 
+insetos |> 
+  ggplot(aes(spray, count))+
+  geom_boxplot()
+
+```
+
+### ANOVA
+
+```{r}
+m3 <- lm(count ~ spray, data = insetos)
+```
+
+###normalidade e heteroscedasticidade
+
+```{r}
+library(performance)
+
+check_normality(m3)
+check_heteroscedasticity(m3)
+
+plot(simulateResiduals(m3))
+anova(m3)
+
+```
+
+###trasnformação ###RAIZ QUADRADA
+
+```{r}
+#dentro do conjunto isetos, criou uma coluna count2 transformada
+insetos$count2 <- sqrt(insetos$count)
+
+m4 <- lm(count2 ~ spray, data = insetos)
+
+check_normality(m4)
+check_heteroscedasticity(m4)
+
+library(DHARMa)
+plot(simulateResiduals(m4))
+
+#visualizar depois de transformado
+insetos |> 
+  ggplot(aes(spray, count2))+
+  geom_boxplot()
+```
+
+###anova
+
+```{r}
+anova(m4)
+```
+
+###calcular médias
+
+```{r}
+library(emmeans)
+
+medias_insetos <- emmeans(m4, ~ spray)
+medias_insetos
+
+#retornar para original com type="response
+#para retornar ao original, a transformação deve ser feita direto no m4
+
+m4 <- lm(sqrt(count) ~ spray, data = insetos)
+medias_insetos <- emmeans(m4, ~ spray, type = "response")
+medias_insetos
+
+#quem difere de quem
+pwpm(medias_insetos)
+
+cld(medias_insetos)
+
+```
+
+#alternativa a não transformação é o teste não parametrico
+
+```{r}
+#kruskal wallis
+ks1 <- kruskal.test(count ~ spray, data = insetos)
+ks1
+
+library(agricolae)
+ks2 <- kruskal(insetos$count, 
+               insetos$spray,
+               group =  TRUE)
+
+ks2
+```
+
+### modelos lineares generalizados GLMs
+
+```{r}
+glm1 <- glm(count ~ spray,
+            family = "poisson",
+            data = insetos)
+
+plot(simulateResiduals(glm1))
+
+medias_insetos2 <- emmeans(glm1, ~ spray, type = "response")
+medias_insetos2
+cld(medias_insetos2)
+```
+
+###pacote para anova #crd para delineamento ao acaso
+
+```{r}
+library(ExpDes)
+
+crd(insetos$spray,
+    insetos$count,
+    mcomp = "tukey")
+#acusou falta de normalidade e homogeneidade, ou seja, os dados devem ser transformados
+
+crd(insetos$spray,
+    sqrt(insetos$count),
+    mcomp = "tukey")
+```

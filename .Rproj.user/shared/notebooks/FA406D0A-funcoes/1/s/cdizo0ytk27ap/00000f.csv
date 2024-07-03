@@ -1,0 +1,2 @@
+"0","cr2 <- cr %>%"
+"0","  select( farm, region,cultivar, sev2)"

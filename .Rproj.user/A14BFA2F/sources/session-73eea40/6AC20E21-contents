@@ -1,0 +1,635 @@
+---
+title: "aaaa"
+---
+
+
+
+# Aula 6
+
+## Bibliotecas
+
+```{r}
+library(gsheet)
+library(tidyverse)
+library(report)
+library(emmeans)
+library(estimability)
+library(see)
+
+```
+
+## Inferencial
+
+Nesta aula, consideramos o alfa = 0,05.
+
+# Teste T
+
+Para análises com dois grupos, com normalidade garantida, usa-se normalmente o teste T.
+
+### Dois grupos independentes
+
+```{r}
+mg <- gsheet2tbl("https://docs.google.com/spreadsheets/d/1bq2N19DcZdtax2fQW9OHSGMR0X2__Z9T/edit#gid=983033137")
+```
+
+#### Visualização
+
+```{r}
+mg |> 
+  ggplot(aes(trat, comp))+
+  geom_boxplot()
+```
+
+Hipótese científica: a suplementação de Mg reduz o tamanho da lesão. Hipótese estatística: H0 = as médias não diferem entre os tratamentos.
+
+Visualmente: Parece que tem um efeito da suplementação de magnésio reduzindo a redução da lesão. Indica que o Mg tem um efeito de indução de resistência na planta.
+
+\*A diferença entre as medianas dá o tamanho desse efeito.
+
+Para dois grupos independentes, com normalidade garantida, usa-se normalmente o teste T. É independente porque são dois grupos medidos individualmente (10 plantas para trat control e 10 plantas para Mg2). \* Se tivesse avaliações em diferentes tempos na mesma planta, seria dependente, pois a resposta seria dependente da planta.
+
+O box indica normalidade, de acordo com a simetria e dá uma ideia de variancia, por isso, para conjuntos com n \> ou = 8, o boxplot pode ser bom para viasualizar e fazer a estatística inferencial.
+
+*Observação: o boxplot para conjuntos com n \> ou = a 8 é bom para visualização e fazer a estatística inferencial (dá noção de normalidade, de acordo com a simetria, e da uma ideia de variância).*
+
+#### Teste T
+
+Função que roda o teste T: `t.test`
+
+Para o t.test precisa que os dados estejam no formato largo (a função pede os dados (tratamentos) em colunas separadas).
+
+Também precisa verificar as premissas: homogeneidade de variâncias e normalidade (Shapiro-wilk test).
+
+```{r}
+mg2 <- mg |> 
+  pivot_wider(names_from = trat,
+              values_from = comp)
+
+teste1 <- t.test(mg2$control, mg2$Mg2)
+```
+
+Assummindo que o test T atende as premissas, como o p-valor foi muito menor que 0,05, pode-se rejeitar a hipótese nula (H0). Ou seja, existe um efeito de indução de resistência.
+
+Se o intervalo de confiança não inclui o 0, dá diferença.
+
+#### Teste de normalidade
+
+Pode ser feito visualmente, mas existe um teste que avalia a normalidade: shapiro.test. No shapiro test a H0 = normalidade. Se p-value for maior do que 0,05, não rejeita H0, ou seja, assume normalidade. Se o p-valor for menor que 0,05, rejeita H0, então assume que não apresenta normalidade.
+
+Como para os dois tratamentos foi maior 0,05, assume normalidade para os tratamentos.
+
+```{r}
+shapiro.test(mg2$control)
+
+hist(mg2$control)
+
+shapiro.test(mg2$Mg2)
+
+hist(mg2$Mg2)
+```
+
+*Normalmente variáveis numéricas contínuas tendem a apresentar normalidade*.
+
+Outra forma de verificar a normalidade:
+
+```{r}
+qqnorm(mg2$control)
+qqline(mg2$control)
+```
+
+#### Teste de variância
+
+H0 = as variâncias são homogêneas.
+
+Se p-value for maior do que 0,05, não rejeita H0, ou seja, assume que as variâncias são homogêneas (homocedasticidade). Se o p-valor for menor que 0,05, rejeita H0, então assume que as variâncias são heterogêneas (heterocedasticidade).
+
+Como valor p é maior que 0,05, assume que são homogêneas.
+
+```{r}
+var.test(mg2$control, mg2$Mg2)
+```
+
+Como as variâncias são homogêneas e a normalidade são atendidas, pode usar o teste T normalmente (tipico caso de análise paramétrica).
+
+Caso a variância fosse heterogênea, poderia utilizar o teste T, porém deve informar que as variâncias são heterogêneas:
+
+```{r}
+t.test(mg2$control, mg2$Mg2,
+       var.equal = FALSE)
+```
+
+#### Uso da função report
+
+O report cria um "textinnho" sobre o teste T que pode ser utilizado para justificar a estatística.
+
+```{r}
+report(teste1)
+```
+
+### Dois grupos dependentes
+
+Dependência: exemplo: mesmo avaliador em tempos diferentes, ou avaliação com escala e sem escala feita pelo mesmo avaliador em momentos diferentes.
+
+```{r}
+escala <- gsheet2tbl("https://docs.google.com/spreadsheets/d/1bq2N19DcZdtax2fQW9OHSGMR0X2__Z9T/edit#gid=1729131173")
+```
+
+Como são dois grupos (avaliação com escala e sem escala), pode usar o Teste T novamente, todavia deve indicar o argumento de que é pareado.
+
+#### Visualização
+
+```{r}
+escala |> 
+  ggplot(aes(assessment, acuracia))+
+  geom_boxplot()
+```
+
+#### Teste T
+
+```{r}
+escala2 <- escala |> 
+  dplyr::select(assessment, rater, acuracia) |> 
+  pivot_wider(names_from = assessment,
+              values_from = acuracia)
+
+t.test(escala2$Aided1, escala2$Unaided,
+       var.equal = FALSE,
+       paired = TRUE)
+
+```
+
+p-value \< 0,05, por isso, rejeita H0: ou seja há um efeito do uso da escala diagramática aumentando a acurácia dos avaliadores. Como o intervalo de confiança não inclui 0 (varia de 0,113 até 0,252), indica que há diferença significativa.
+
+#### Normalidade
+
+```{r}
+shapiro.test(escala2$Unaided)
+
+hist(escala2$Unaided)
+
+shapiro.test(escala2$Aided1)
+
+hist(escala2$Aided1)
+```
+
+H0 = apresenta normalidade Normalidade okay (p-valor \> 0,05, ou seja, aceita H0)
+
+#### Variância
+
+```{r}
+var.test(escala2$Unaided, escala2$Aided1)
+```
+
+H0 = variâncias são homogêneas.
+
+Variâncias são heterogêneas (p-value \< 0,05, rejeita H0)
+
+# Teste não paramétrico
+
+Houve uma modificação nos dados (Escala) para que fiquem não paramétricos.
+
+#### Visualização
+
+```{r}
+escala <- gsheet2tbl("https://docs.google.com/spreadsheets/d/1bq2N19DcZdtax2fQW9OHSGMR0X2__Z9T/edit#gid=1729131173")
+
+escala |> 
+  ggplot(aes(assessment, acuracia))+
+  geom_boxplot()
+```
+
+#### Teste de normalidade
+
+```{r}
+escala2 <- escala |> 
+  select(assessment, rater, acuracia) |> 
+  pivot_wider(names_from = assessment,
+              values_from = acuracia)
+
+
+shapiro.test(escala2$Unaided)
+
+hist(escala2$Unaided)
+
+shapiro.test(escala2$Aided1)
+
+hist(escala2$Aided1)
+```
+
+Como o p-valor é menor que 0,05, rejeita H0, dessa forma, não apresenta normalidade. A partir daí utilizaremos outro teste, equivalente ao Teste T, mas que usa-se para dados não paramétricos.
+
+#### Teste Wilcox
+
+Não precisa verificar as variâncias.
+
+```{r}
+wilcox.test(escala2$Aided1,
+            escala2$Unaided,
+            paired = TRUE)
+```
+
+Como o p-valor é menor que 0,05, rejeita H0, dessa forma as médias são diferentes. Ou seja, há um efeito do uso da escala diagramática aumentando a acurácia dos avaliadores.
+
+Se os dados não atenderem as pressimas para análise paramétrica, pode-se usar um teste não paramétrico, ou, fazer a transformação dos dados, para que esses valores transformados possam atender as premissas. Porém, ao se usar os dados transformados, não está usando os dados originais (não está errado, é apenas uma metodologia diferente).
+
+t.test =\> pareado (paired = "TRUE") não-pareado (paired = "FALSE" - não precisa porque já assume isso)
+
+var.test =\>\
+variâncias homogêneas (var.equal = TRUE - não precisa porque já assume isso) variâncias heterogêneas (var.equal = FALSE)
+
+wilcox.test =\> pareado (paired = TRUE) não-pareado (paired = FALSE) = Mann-Whitney test
+
+# Três ou mais grupos
+
+ANOVA: Hipótese alternativa é que pelo menos uma média é diferente das outras. Mas não diz qual média é diferente das outras, para isso, usa o teste de comparação de médias. H0 = as médias não diferem.
+
+tcm = taxa de crescimento micelial
+
+```{r}
+micelial <- gsheet2tbl("https://docs.google.com/spreadsheets/d/1bq2N19DcZdtax2fQW9OHSGMR0X2__Z9T/edit#gid=959387827")
+```
+
+#### Visualização
+
+```{r}
+micelial |> 
+  ggplot(aes(especie, tcm))+
+  geom_jitter(width = 0.01)+
+  stat_summary(
+    geom = "point",
+    fun.y = "mean",
+    size = 3,
+    color = "red"
+  )
+```
+
+Visualmente: parece que a dispersão dos dados é muito grande, dessa forma não parece haver muita diferença entre os grupos.
+
+Teste F: é a razão da variância entre os grupos sobre a variância dentro dos grupos.
+
+# Teste Anova
+
+1º: Ajusta ANOVA 2º: trabalha com resíduos da ANOVA (aplica os testes)
+
+```{r}
+m1 <- lm(tcm ~especie, data = micelial)
+
+anova(m1)
+summary(m1)
+```
+
+DF = grau de liberdade Sum Sq = é a soma dos quadrados Mean SQ = média da soma dos quadrados (variância) F value (valor F) = variância da espécie/média de residuals Quanto maior o F, menor o p-valor
+
+Como p-valor \> ou = 0,05 (0,055), não descartamos H0, ou seja, não a diferença entre as médias. Ou seja, não há diferença entre o crescimento micelial das espécies.
+
+Para retirar o intercepto e dar os valores médios direto
+
+```{r}
+m1 <- lm(tcm ~especie -1, data = micelial)
+
+anova(m1)
+summary(m1)
+```
+
+Para ter variabilidade, modificamos os dados, para ter efeito de espécie.
+
+```{r}
+micelial <- gsheet2tbl("https://docs.google.com/spreadsheets/d/1bq2N19DcZdtax2fQW9OHSGMR0X2__Z9T/edit#gid=959387827")
+
+micelial |> 
+  ggplot(aes(especie, tcm))+
+  geom_jitter(width = 0.01)+
+  stat_summary(
+    geom = "point",
+    fun.y = "mean",
+    size = 3,
+    color = "red"
+  )
+```
+
+#### Teste Anova (com dados alterados)
+
+```{r}
+m1 <- lm(tcm ~especie, data = micelial)
+
+anova(m1)
+summary(m1) #<- visualiza a diferença entre os grupos
+```
+
+Como valor-p foi menor que 0,05 (2.028e-07), rejeitamos H0, dessa forma, pelo menos uma espécie difere das outras.
+
+-   o summary compara a média de todos com asiaticus (intercepto) e não de todos contra todos.
+
+## Para verificar a diferença entre as médias
+
+```{r}
+medias1 <- emmeans(m1, ~especie)
+
+library(multcomp)
+library(multcompView) #para colocar as letrinhas
+cld(medias1)
+```
+
+#### Verificando as premissas
+
+```{r}
+#Para verificar normalidade:
+hist(m1$residuals)
+shapiro.test(m1$residuals)
+
+#Para verificar as variâncias:
+bartlett.test(tcm ~especie, data = micelial)
+
+library(DHARMa)
+plot(simulateResiduals(m1))
+
+library(performance)
+check_normality(m1)
+check_heteroscedasticity(m1) #(variâncias homogêneas = homoscedastic)
+check_model(m1)
+
+```
+
+# Aula 7
+
+## Importação dos dados
+
+```{r}
+inseticida <- InsectSprays
+
+inseticida |> 
+  count(spray)
+```
+
+12 repetições para cada spray. tem um fator só (inseticida = spray) -\> vai ser Anova unifatorial (um fator só com seis níveis).
+
+### Visualização
+
+Ver se tem normalidade dos resíduos e homogeneidade entre as variâncias.
+
+```{r}
+inseticida |> 
+  ggplot(aes(spray, count))+
+  geom_boxplot()
+```
+
+F é o que tem maior variância, o que tem menor é o C e D (tem outlier), parece que (visualmente) as variâncias não são homogêneas.
+
+1º Ajusta ANOVA 2º trabalha com resíduos da ANOVA (aplica os testes)
+
+`lm` = função que ajusta anova
+
+```{r}
+m1 <- lm(count ~ spray,
+         data = inseticida)
+
+summary(m1)
+anova(m1)
+
+hist(m1$residuals)
+shapiro.test(m1$residuals)
+qqnorm(m1$residuals)
+qqline(m1$residuals)
+
+bartlett.test(count ~ spray,
+             data = inseticida)
+```
+
+Os resíduos parecem ter normalidade visualizando pelo histograma. AO fazer o shapiro.test, vê-se que não tem normalidade, pq o p-valor \< 0,05, então rejeita H0 (H0 = normalidade).
+
+Mais grave: variâncias não serem homogêneas, do que normalidade não ser atendida.ANOVA é um teste mais robusto à falta de normalidade do que à heterocedasticidade.
+
+```{r}
+library(performance)
+check_normality(m1)
+check_heteroscedasticity(m1)
+
+library(DHARMa)
+plot(simulateResiduals(m1))
+```
+
+Com ***performance*** e **DHARma**, foi possível ver que não tem normalidade e que as variâncias são heterogêneas. O DHARma faz o outro test (KS test) -- saída das variâncias com texto em vermelho indica que as variâncias são heterogêneas.
+
+Tranformações mais comuns: log de x (quando tem valor igual a 0, adiciona-se uma constante, por exemplo, +0,5), raiz quadrada de x, arc seno de x
+
+# Premissas não atendidas
+
+### Alternativa 1: fazer a transformação dos dados
+
+Normalmente, quando tem contagem (numérica discreta), raiz quadrada resolve.
+
+Função `sqrt` faz a raiz quadrada.
+
+```{r}
+inseticida <- inseticida |> 
+  mutate(count2 = sqrt(count))
+
+inseticida |> 
+  ggplot(aes(spray, count2))+
+  geom_boxplot()
+```
+
+Agora, variancias parecem mais iguais, dessa forma, visualmente parece que a raiz quadrada está homogeneizando as variâncias.
+
+```{r}
+m2 <- lm(count2 ~ spray,
+         data = inseticida)
+
+summary(m2)
+anova(m2)
+hist(m2$residuals)
+shapiro.test(m2$residuals)  # tem normalidade
+qqnorm(m2$residuals)
+qqline(m2$residuals)
+bartlett.test(count2 ~spray,
+             data = inseticida)  # tem homgeneidade das variâncias
+```
+
+Com a transformação alcançou a normalidade e homogeneidade de variancias. Em ***anova(m2)*** pode ver que pelo menos um grupo difere dos demais (p-valor \< 0,05)
+
+```{r}
+library(performance)
+check_normality(m2)
+check_heteroscedasticity(m2)
+
+library(DHARMa)
+plot(simulateResiduals(m2)) #melhorou ainda mais a normmalidade e variância deu ñ significativo
+```
+
+Quando for avaliar, utilizar os diferentes testes para garantir confiabilidade. ANOVa é um teste mais robusto à falta de normalidade do que à heterocedasticidade.
+
+```{r}
+# Para m1 (dados não transformados)
+library(emmeans)
+m1_medias <- emmeans(m1, ~ spray,)
+plot(m1_medias)
+
+library(multcomp)
+cld(m1_medias)
+
+# Para m2 (dados transformados)
+library(emmeans)
+m2_medias <- emmeans(m2, ~ spray,)
+plot(m2_medias)
+
+library(multcomp)
+cld(m2_medias)
+pwpm(m2_medias)
+pwpp(m2_medias)
+pairs(m2_medias)
+# quando usa os dados não transformados tá cometendo o erro do tipo 2, não estava mostrando a diferença quando existia (mostrou só 2 grupos e quando com dados transformados dividiu em 3)
+```
+
+Utilizando o pwpm mostrou a comparação entre cada um dos grupos (comparação par a par). Quando o valor (é igual ao p-valor) é \< 0,05, diz que são de grupos diferentes (rejeita H0), enquanto valor \> 0,05, pertencem ao mesmo grupo (não rejeita H0).
+
+#### Testando outras formas de transformação: box
+
+Box-Cox: y(lambda) = (x\^lambda -1)/lambda lambda é o valor de x onde o y é máximo Sempre que o lambda = 0,5 é igual a raiz quadrado
+
+```{r}
+library(MASS)
+b <- boxcox(lm(inseticida$count+0.1 ~1))
+lambda <- b$x[which.max(b$y)]
+
+# O lambda (0,42) é o que usaremos na fórmula para transformar os dados --> variável transformada
+
+#Usando o lambda (0,42) na fórmula: y(lambda) = (x^lambda -1)/lambda
+inseticida$count3 <- (inseticida$count ^ lambda - 1) / lambda
+
+m5 <- lm(count3 ~ spray,
+         data = inseticida)
+
+summary(m5)
+anova(m5)
+hist(m5$residuals)
+shapiro.test(m5$residuals)  
+qqnorm(m5$residuals)
+qqline(m5$residuals)
+bartlett.test(count3 ~spray,
+             data = inseticida)
+
+# é uma forma de estabilizar variância também
+```
+
+### Alternativa 2: teste não paramétrico: Kruskal test
+
+Usa saída original (sem transformar). Faz um rankeamento. Utiliza o teste Kruskal-wallis. Nele, H0 = médias são iguais. Quando rejeita H0 (p-valor menor que 0,05) pelo menos uma média difere das demais.
+
+```{r}
+library(agricolae)
+
+kruskal.test(count ~spray,
+             data = inseticida) #kruskal.test é do R base
+
+# usando o agricolae
+m3 <- kruskal(inseticida$count,
+        inseticida$spray,
+        group = TRUE)
+```
+
+H0 = médias são iguais Como Kruskal-wallis, rejeita H0, então as médias são diferentes
+
+O não-paramétrico deu os mesmos resultados dos valores transformados.
+
+modelo linear generalizado = glm. É o modelo menos criticado (entre os transformado e não-paramétrico). Utiliza a distribuição apropriado.
+
+### Alternativa 3: GLMs
+
+Modelos lineares generalizados é o modelo menos criticado (entre a transformação dos dados e o uso de não paramétricos). Utiliza a distribuição apropriada para os dados. Exemplo, para dados contagem (numérica discreta): a distribuição de Poisson se ajusta bem a essa distribuição (de 0 para cima).
+
+```{r}
+# glm com a familia gaussiana reduz a lm
+m4 <- glm(count ~ spray,
+          family = gaussian,
+          data = inseticida)
+
+# utilizando com a família poisson
+m4 <- glm(count ~ spray,
+          family = poisson,
+          data = inseticida)
+summary(m4)
+anova(m4)
+
+library(car)
+Anova(m4)
+plot(simulateResiduals(m4))
+
+m4_medias <- emmeans(m4, ~spray,
+                     type = "response")
+
+cld(m4_medias)
+```
+
+Anova: tem um que é diferente dos outros (p-valor maior ou igual a 0,05). Os grupos com o GLM foram iguais às outras alternativas (dados transformados e não-paramétrico)
+
+# Anova 2 fatores = Modelo fatorial (two-way anova)
+
+Quando tem interação significativa entre os fatores tem que se estimar as médias de um dentro do outro (combinação dos fatores). Letras maiúsculas comparam as colunas e as minusculas comparam as linhas.
+
+## Importa os dados
+
+```{r}
+theme_set(theme_bw())
+li <- gsheet2tbl("https://docs.google.com/spreadsheets/d/1bq2N19DcZdtax2fQW9OHSGMR0X2__Z9T/edit#gid=2023059672")
+
+#visualização dos dados
+
+li |> 
+  ggplot(aes(factor(dose), severity, color = factor(dose)))+
+  geom_jitter(width = 0.05)+
+  facet_wrap(~~treat)
+
+li |> 
+  ggplot(aes(factor(treat), severity, color = factor(dose)))+
+  geom_jitter(width = 0.05)
+```
+
+## Anova
+
+```{r}
+mf <- lm(severity ~treat*factor(dose),
+         data = li)
+
+anova(mf)
+```
+
+treat:dose = interação
+
+Interação significativa: tem que estimar as médias de um dentro do outro (combinação dos fatores). São quatro valores médios (LI-0,5, LI-2,0, TEB-0,5 e TEB-2,0 = 4 médias). Letras maiusculas comparam as colunas e as minusculas comparam as linhas
+
+EXEMPLO:
+
+![](images/1.png)
+
+### Testar as premissas
+
+```{r}
+plot(simulateResiduals(mf))
+```
+
+Dharma: não teve problema na normalidade dos residuals, nem na heterocedasticidade
+
+```{r}
+check_heteroscedasticity(mf)
+check_homogeneity(mf)
+```
+
+Utilizando o performance, os resultados foram o contrário do DHArma, mas o Dharma é mais confiável, então vamos prosseguir.
+
+### COMPARAR AS COLUNAS
+
+```{r}
+mf_medias <- emmeans(mf, ~ treat | dose)
+cld(mf_medias)  #para mostrar os grupos
+```
+
+![](images/2.png)
+
+### COMPARAR AS LINHAS
+
+```{r}
+mf_medias <- emmeans(mf, ~ dose | treat)
+cld(mf_medias)
+```
+
+![](images/3.png)

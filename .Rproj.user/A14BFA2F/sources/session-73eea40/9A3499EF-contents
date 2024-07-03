@@ -1,0 +1,36 @@
+---
+title: ""
+---
+
+# Download do R
+
+Link para [instalação](https://posit.co/download/rstudio-desktop/) do R e R Studio
+
+# Instalação de pacotes
+
+A instalação de pacotes é uma etapa crucial na realização de análise de dados, pode ser feita pelo CRAN ou GitHub e deve ser feita seguindo os passos a seguir:
+
+-   **Pacotes do CRAN** que é o repositorio oficial do R.
+
+`Tools -> Install Packages -> "digitar o nome do pacote" -> Install ou usando a função "instal.packages(nome do pacote)"` no *console*
+
+-   **Pacotes do GitHub:**
+
+Utiliza a função `install_github()`
+
+Exemplo: `remotes::install_github("emdelponte/r4pde")`
+
+# Carregamento dos pacotes
+
+O carregamento dos pacotes pode ser feito diretamente através do *console*, digitando `library` e entre parenteses o nome do pacote. Obs: lembrar sempre de carregar um pacote antes de utilizar-lo.
+
+Para inserir um novo chunk (ctrl + alt + I).
+
+```{r}
+# Exemplo
+
+library(tidyverse)
+library(dplyr) 
+
+
+```

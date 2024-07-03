@@ -1,0 +1,6 @@
+"0",""
+"0"," "
+"0","# Posso selecionar as coluna por nomes. "
+"0",""
+"0","cr %>% "
+"0","  select(farm, region, inc, sev2)"

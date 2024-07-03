@@ -1,0 +1,8 @@
+"0","library(rnaturalearth)"
+"2","Warning: package ‘rnaturalearth’ was built under R version 4.3.3"
+"0","library(remotes)"
+"2","Warning: package ‘remotes’ was built under R version 4.3.3"
+"0","remotes::install_github(""ropensci/rnaturalearthhires"")"
+"2","Skipping install of 'rnaturalearthhires' from a github remote, the SHA1 (dd1e210c) has not changed since last install.
+  Use `force = TRUE` to force installation
+"

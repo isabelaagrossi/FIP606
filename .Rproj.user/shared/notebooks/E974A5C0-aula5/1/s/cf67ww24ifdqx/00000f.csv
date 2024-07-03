@@ -1,0 +1,12 @@
+"0","notas %>% "
+"0","  ggplot(aes(x = as.factor(prova), "
+"0","             y = nota)) +"
+"0","  geom_errorbar(stat = ""boxplot"", width = 0.1, size = 1) + #o limite da barra de erros que segue o padrão do boxplot"
+"0","  geom_boxplot(width = 0.5, fill = ""#C2A5CF"") + #width- mexe na largura da caixa"
+"0","  geom_point(stat = ""summary"", fun = ""mean"", shape = 4, size = 2, color = ""red"") + #a média é representada por um ""X"", onde eu utlizei o resumo do meus dados, utilizando a função média. "
+"0","  labs (x = ""Prova"","
+"0","        y = ""Notas"")+"
+"0","  geom_jitter(alpha = 0.6, height = 0, width = 0.25, color = ""black"", size = 1.5) + #alpha - transparencia dos meus pontos"
+"0","  theme_few() + ylim(0,100)"
+"2","Warning: Using `size` aesthetic for lines was deprecated in ggplot2 3.4.0.
+Please use `linewidth` instead."
